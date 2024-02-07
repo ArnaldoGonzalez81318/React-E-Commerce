@@ -11,6 +11,11 @@
   justify-content: space-between;
 }
 
+.item:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
 .item img {
   width: 100%;
   height: 200px;
@@ -37,12 +42,12 @@
 
 .item-price-old {
   text-decoration: line-through;
-  color: #777;
+  color: #8c8c8c;
 }
 
 .item-price-new {
   font-size: 1.5rem;
-  color: #f1356d;
+  color: #374151;
 }
 
 .item-details p {
