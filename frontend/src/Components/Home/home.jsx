@@ -13,7 +13,6 @@ const Home = () => {
         <p>Shop the latest arrivals
           <br
           />from our collection</p>
-        <button>Shop Now</button>
         <div className="home-hand-icon">
           <p>New</p>
           <img src={hand_icon} alt="hand icon" />
