@@ -68,6 +68,7 @@
 .newsletters form button:hover {
   background: #FDE1FF;
   color: #454545;
+  transform: scale(1.05);
 }
 
 .newsletters form button:active {
