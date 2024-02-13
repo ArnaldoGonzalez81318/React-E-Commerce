@@ -26,7 +26,8 @@
 }
 
 .newsletters form {
-  width: 100%;
+  width: 730px;
+  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,11 +35,11 @@
 }
 
 .newsletters form input {
-  width: 70%;
-  height: 50px;
+  width: 730px;
+  height: 70px;
   padding: 0 20px;
   border: none;
-  border-radius: 10px;
+  border-radius: 80px;
   font-size: 1.5rem;
   font-weight: 400;
   color: #454545;
@@ -52,10 +53,10 @@
 }
 
 .newsletters form button {
-  width: 20%;
-  height: 50px;
+  width: 210px;
+  height: 70px;
   border: none;
-  border-radius: 10px;
+  border-radius: 80px;
   font-size: 1.5rem;
   font-weight: 700;
   color: #FDE1FF;
