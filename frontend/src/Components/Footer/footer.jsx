@@ -8,6 +8,9 @@ import whatsapp_icon from '../Assets/whatsapp_icon.png'
 import './footer.css'
 
 const Footer = () => {
+  const date = new Date()
+  const year = date.getFullYear()
+
   return (
     <div className="footer">
       <div className="footer-logo">
@@ -43,7 +46,7 @@ const Footer = () => {
       </ul>
       <div className="footer-copyright">
         <hr />
-        <p>© 2024 Shop. All rights reserved</p>
+        <p>&copy; {year} Shop. All rights reserved.</p>
       </div>
     </div>
   )
