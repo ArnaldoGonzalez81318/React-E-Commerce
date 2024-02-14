@@ -28,11 +28,7 @@ export const NavBar = () => {
       </ul>
       <div className="navbar-login-cart">
         <Link to="login" >
-          <button
-            className="navbar-login-btn"
-            onClick={() => alert('Login')}>
-            Login
-          </button>
+          <button className="navbar-login-btn">Login</button>
         </Link>
         <Link to="cart">
           <img src={cart_icon} alt="cart" />
