@@ -1,8 +1,21 @@
-import React from 'react'
+import React, { useContext } from 'react';
+import { ShopContext } from '../Context/shopContext';
+import { useParams } from 'react-router-dom';
+import Breadcrumbs from '../Components/Breadcrumbs/breadcrumbs';
+import ProductDisplay from '../Components/ProductDisplay/productDisplay';
+
+import './CSS/product.css';
 
 const Product = () => {
+  const { products } = useContext(ShopContext);
+  const { id } = useParams();
+  const product = products.find(product => product.id === Number(id));
+
   return (
-    <div>Product</div>
+    <div className='product'>
+      <Breadcrumbs product={product} />
+      <ProductDisplay product={product} />
+    </div>
   )
 }
 
