@@ -36,24 +36,50 @@ const ProductDisplay = (props) => {
         <p className='product-display-price-new'>${product.new_price}</p>
         <p className='product-display-description'>{product.description}</p>
         <div className='product-display-variations'>
-          <h3>Select Size</h3>
-          <div className='product-display-size'>
-            <p>S</p>
-            <p>M</p>
-            <p>L</p>
-            <p>XL</p>
-            <p>XXL</p>
+          <div className='product-display-colors'>
+            <h3>Color</h3>
+            <div className='product-display-colors-list'>
+              <div className='product-display-color'>
+                <div className='product-display-color-dot' style={{ backgroundColor: 'red' }}></div>
+              </div>
+              <div className='product-display-color'>
+                <div className='product-display-color-dot' style={{ backgroundColor: 'blue' }}></div>
+              </div>
+              <div className='product-display-color'>
+                <div className='product-display-color-dot' style={{ backgroundColor: 'green' }}></div>
+              </div>
+              <div className='product-display-color'>
+                <div className='product-display-color-dot' style={{ backgroundColor: 'yellow' }}></div>
+              </div>
+              <div className='product-display-color'>
+                <div className='product-display-color-dot' style={{ backgroundColor: 'black' }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className='product-display-sizes'>
+            <h3>Size</h3>
+            <div className='product-display-sizes-list'>
+              <div className='product-display-size'>XS</div>
+              <div className='product-display-size'>S</div>
+              <div className='product-display-size'>M</div>
+              <div className='product-display-size'>L</div>
+              <div className='product-display-size'>XL</div>
+              <div className='product-display-size'>2XL</div>
+              <div className='product-display-size'>3XL</div>
+            </div>
           </div>
         </div>
         <div className='product-display-quantity'>
           <h3>Quantity</h3>
           <div className='product-display-quantity-selector'>
             <button>-</button>
-            <p>1</p>
+            <input type='text' value='1' />
             <button>+</button>
           </div>
         </div>
-        <button className='product-display-addToCart'>Add to Cart</button>
+        <button className='product-display-add-to-cart-btn'>Add to Cart</button>
+        <button className='product-display-buy-now-btn'>Buy Now</button>
       </div>
     </div>
   )
