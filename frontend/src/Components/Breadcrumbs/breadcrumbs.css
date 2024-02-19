@@ -9,3 +9,21 @@
   font-size: 1rem;
   font-weight: 600;
 }
+
+.breadcrumbs-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.breadcrumbs-container a {
+  color: #5e5e5e;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.breadcrumbs-container a:hover {
+  color: #388e3c;
+  text-decoration: underline;
+}
