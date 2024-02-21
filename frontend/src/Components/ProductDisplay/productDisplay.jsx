@@ -32,8 +32,14 @@ const ProductDisplay = (props) => {
           </div>
           <p className='product-display-review-count'>(1,245) reviews</p>
         </div>
-        <p className='product-display-price-old'>${product.old_price}</p>
-        <p className='product-display-price-new'>${product.new_price}</p>
+        <p className='product-display-price-old'>
+          <span className='product-display-price-old-label'>Was: </span>
+          <span className='product-display-price-old-value'>${product.old_price}</span>
+        </p>
+        <p className='product-display-price-new'>
+          <span className='product-display-price-new-label'>Now: </span>
+          <span className='product-display-price-new-value'>${product.new_price}</span>
+        </p>
         <p className='product-display-description'>{product.description}</p>
         <div className='product-display-variations'>
           <div className='product-display-colors'>
