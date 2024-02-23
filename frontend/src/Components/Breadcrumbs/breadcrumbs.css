@@ -19,6 +19,7 @@
 
 .breadcrumbs-container a {
   color: #5e5e5e;
+  text-transform: capitalize;
   text-decoration: none;
   transition: 0.3s;
 }
