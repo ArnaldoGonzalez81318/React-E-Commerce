@@ -8,7 +8,7 @@ const Item = (props) => {
     <div className="item">
       <div className="item-image">
         <Link to={`/product/${props.id}`}>
-          <img src={props.image} alt={props.name} />
+          <img src={props.image} alt={props.name} onClick={() => window.scrollTo(0, 0)} />
         </Link>
       </div>
       <div className="item-details">
