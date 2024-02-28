@@ -10,12 +10,12 @@ const Breadcrumbs = (props) => {
     <div className='breadcrumbs'>
       <div className="breadcrumbs-container">
         <Link to='/'>Home</Link>
-        <img src={arrow_icon} alt='arrow' />
+        <img src={arrow_icon} alt="arrow" />
         <Link to='/shop'>Shop</Link>
-        <img src={arrow_icon} alt='arrow' />
-        <Link to={`/shop/${product.category}`}>{product.category}</Link>
-        <img src={arrow_icon} alt='arrow' />
-        <Link to={`/shop/${product.category}/${product.name}`}>{product.name}</Link>
+        <img src={arrow_icon} alt="arrow" />
+        <Link to={`/category/${product.category}`}>{product.category}</Link>
+        <img src={arrow_icon} alt="arrow" />
+        <p>{product.name}</p>
       </div>
     </div>
   )
