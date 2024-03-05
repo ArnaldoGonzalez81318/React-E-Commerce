@@ -14,6 +14,7 @@ const RelatedProducts = () => {
           return (
             <Item
               key={product.id}
+              id={product.id}
               image={product.image}
               name={product.name}
               old_price={product.old_price}
