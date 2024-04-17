@@ -15,33 +15,33 @@ const getDefaultCart = () => {
 
 const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState(getDefaultCart());
-  // const products = all_products;
 
-  const addToCart = (id) => {
+  const addToCart = (itemId) => {
     setCartItems((prev) => {
-      return { ...prev, [id]: prev[id] + 1 };
+      return { ...prev, [itemId]: prev[itemId] + 1 };
     });
+
+    console.log('cartItems:', cartItems);
   }
 
-  const removeFromCart = (id) => {
+  const removeFromCart = (itemId) => {
     setCartItems((prev) => {
-      return { ...prev, [id]: prev[id] - 1 };
+      return { ...prev, [itemId]: prev[itemId] - 1 };
     });
+
+    console.log('cartItems:', cartItems);
   }
 
-  const products = all_products.map((product) => {
-    return {
-      ...product,
-      inCart: cartItems[product.id],
-      addToCart: () => addToCart(product.id),
-      removeFromCart: () => removeFromCart(product.id)
-    };
-  });
+  const clearCart = () => {
+    setCartItems(getDefaultCart());
 
-  console.log('products', products);
+    console.log('cartItems:', cartItems);
+  }
+
+  const contextValues = { all_products, cartItems, addToCart, removeFromCart, clearCart };
 
   return (
-    <ShopContext.Provider value={{ products }}>
+    <ShopContext.Provider value={contextValues}>
       {props.children}
     </ShopContext.Provider>
   );
