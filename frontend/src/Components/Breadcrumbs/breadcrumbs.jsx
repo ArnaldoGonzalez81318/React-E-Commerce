@@ -6,7 +6,7 @@ import './breadcrumbs.css'
 
 const Breadcrumbs = (props) => {
   const { product } = props
-  console.log('product', product)
+  console.log('breadcrumbs product:', product)
 
   return (
     <div className='breadcrumbs'>
