@@ -15,6 +15,13 @@ const LoginSignup = () => {
           <button>Sign Up</button>
         </form>
         <p>Already have an account? <span>Log in</span></p>
+        <div className="signup-agreement">
+          <input type="checkbox" />
+          <p>
+            By signing up, you agree to our&nbsp;
+            <span>Terms</span> and <span>Privacy Policy</span>
+          </p>
+        </div>
 
         <h2>Log In</h2>
         <form className="login-signup-form">
