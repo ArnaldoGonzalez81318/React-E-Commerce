@@ -9,9 +9,9 @@ import './CSS/product.css';
 import RelatedProducts from '../Components/RelatedProducts/relatedProducts';
 
 const Product = () => {
-  const { products } = useContext(ShopContext);
+  const { all_products } = useContext(ShopContext);
   const { id } = useParams();
-  const product = products.find(product => product.id === Number(id));
+  const product = all_products.find((e) => e.id === Number(id));
 
   return (
     <div className='product'>
