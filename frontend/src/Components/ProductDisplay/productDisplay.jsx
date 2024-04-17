@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import star_icon from '../Assets/star_icon.png'
 import star_dull_icon from '../Assets/star_dull_icon.png'
 import { ShopContext } from '../../Context/shopContext'
@@ -9,27 +9,6 @@ const ProductDisplay = (props) => {
   const { product } = props
   const { addToCart } = useContext(ShopContext)
   const [quantity, setQuantity] = useState(1)
-
-  useEffect(() => {
-    const handleClick = (e) => {
-      const button = e.target;
-      if (!button.classList.contains("loading")) {
-        button.classList.add("loading");
-        setTimeout(() => button.classList.remove("loading"), 3700);
-      }
-      e.preventDefault();
-    };
-
-    document.querySelectorAll(".product-display-add-to-cart-btn").forEach((button) => {
-      button.addEventListener("click", handleClick);
-    });
-
-    return () => {
-      document.querySelectorAll(".product-display-add-to-cart-btn").forEach((button) => {
-        button.removeEventListener("click", handleClick);
-      });
-    };
-  }, []);
 
   return (
     <div className='product-display'>
