@@ -6,8 +6,8 @@ import Item from '../Components/Item/item';
 import './CSS/shopCategory.css'
 
 const ShopCategory = (props) => {
-  const { products } = useContext(ShopContext);
-  // console.log('products:', products)
+  const { all_products } = useContext(ShopContext);
+  console.log('all_products:', all_products)
 
   return (
     <div className="shop-category">
@@ -17,16 +17,16 @@ const ShopCategory = (props) => {
         <p className="shop-category-sort-count">
           <span>
             Showing <strong style={{ color: '#ff6e6c' }}>
-              {products.filter((product) => product.category === props.category).length}
+              {all_products.filter((product) => product.category === props.category).length}
             </strong>
           </span>
           &nbsp;proudcts out of&nbsp;
-          <strong style={{ color: '#ff6e6c' }}>{products.length}</strong>
+          <strong style={{ color: '#ff6e6c' }}>{all_products.length}</strong>
         </p>
         <label htmlFor="sort">Sort by: <img src={dropdown_icon} alt="dropdown" /></label>
       </div>
       <div className="shop-category-products">
-        {products.map((product) => {
+        {all_products.map((product) => {
           // console.log('product:', product)
           // This is a ternary operator that checks if the product's category matches the category of the page.
           // If it does, it returns the Item component with the product's details. If it doesn't, it returns null.
