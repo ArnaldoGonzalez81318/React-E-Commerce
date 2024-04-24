@@ -5,7 +5,7 @@ import remove_icon from '../Assets/cart_cross_icon.png';
 import './cartItems.css'
 
 const CartItems = () => {
-  const { all_products, cartItems, addToCart, removeFromCart } = useContext(ShopContext);
+  const { all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount } = useContext(ShopContext);
 
   return (
     <div className="cart-items">
@@ -52,11 +52,7 @@ const CartItems = () => {
         <div className='cart-items-total-wrapper'>
           <div className='cart-items-total-subtotal'>
             <h3>Subtotal</h3>
-            <p>
-              ${all_products.reduce((acc, product) => {
-                return acc + cartItems[product.id] * product.new_price;
-              }, 0).toFixed(2)}
-            </p>
+            <p>${getTotalCartAmount()}</p>
           </div>
           <div className='cart-items-total-shipping'>
             <h3>Shipping</h3>
@@ -64,11 +60,7 @@ const CartItems = () => {
           </div>
           <div className='cart-items-total-total'>
             <h3>Total</h3>
-            <p>
-              ${all_products.reduce((acc, product) => {
-                return acc + cartItems[product.id] * product.new_price;
-              }, 0).toFixed(2)}
-            </p>
+            <p>${getTotalCartAmount()}</p>
           </div>
         </div>
         <div className='cart-items-promo'>
