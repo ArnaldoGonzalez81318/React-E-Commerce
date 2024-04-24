@@ -5,7 +5,13 @@ import remove_icon from '../Assets/cart_cross_icon.png';
 import './cartItems.css'
 
 const CartItems = () => {
-  const { all_products, cartItems, addToCart, removeFromCart, getTotalCartAmount } = useContext(ShopContext);
+  const {
+    all_products,
+    cartItems,
+    addToCart,
+    removeFromCart,
+    getTotalCartAmount
+  } = useContext(ShopContext);
 
   return (
     <div className="cart-items">
