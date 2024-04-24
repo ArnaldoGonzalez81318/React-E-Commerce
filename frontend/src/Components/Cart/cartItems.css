@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: 3fr 1fr;
   gap: 20px;
-  margin: 50px;
+  margin: 20px;
 }
 
 .cart-items-header {
@@ -31,7 +31,7 @@
 }
 
 .cart-items-header h3 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
 }
@@ -139,13 +139,13 @@
 }
 
 .cart-items-total-subtotal h3 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
 }
 
 .cart-items-total-subtotal p {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
 }
@@ -158,13 +158,13 @@
 }
 
 .cart-items-total-shipping h3 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
 }
 
 .cart-items-total-shipping p {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
 }
@@ -186,13 +186,13 @@
 }
 
 .cart-items-total-total h3 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
 }
 
 .cart-items-total-total p {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0;
 }
@@ -259,6 +259,7 @@
   height: 50px;
   font-size: 1.2rem;
   font-weight: 500;
+  text-transform: uppercase;
   border: none;
   border-radius: 15px;
   background-color: #00a043;
@@ -289,4 +290,18 @@
 
 .checkout-button button:disabled:hover {
   background-color: #ffffff;
+}
+
+@media screen and (max-width: 1024px) {
+  .cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px;
+  }
+
+  .cart-items-promo input {
+    width: 100%;
+    margin-right: 0;
+  }
 }
