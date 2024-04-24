@@ -9,17 +9,17 @@ const CartItems = () => {
 
   return (
     <div className="cart-items">
-      <h2>Cart</h2>
-      <div className='cart-items-header'>
-        <h3>Product</h3>
-        <h3>Title</h3>
-        <h3>Quantity</h3>
-        <h3>Price</h3>
-        <h3>Total</h3>
-        <h3>Remove</h3>
-      </div>
-      <hr />
-      <div className='cart-items-container'>
+      <div className="cart-items-header">
+        <h2>Shopping Cart</h2>
+        <div className='cart-items-header-wrapper'>
+          <h3>Product</h3>
+          <h3>Title</h3>
+          <h3>Quantity</h3>
+          <h3>Price</h3>
+          <h3>Total</h3>
+          <h3>Remove</h3>
+        </div>
+
         <div className='cart-items-list'>
           {all_products.map((product) => {
             if (cartItems[product.id] > 0) {
@@ -39,34 +39,44 @@ const CartItems = () => {
                       <img src={remove_icon} className='remove-icon' alt='remove' />
                     </div>
                   </div>
-                  <hr />
                 </div>
               );
             } else {
               return null;
             }
           })}
+        </div>
+      </div>
 
-          <div className='cart-items-total'>
-            <div className='cart-items-total-wrapper'>
-              <h2>Total</h2>
-              <h2>${all_products.reduce((acc, product) => {
+      <div className='cart-items-total'>
+        <div className='cart-items-total-wrapper'>
+          <div className='cart-items-total-subtotal'>
+            <h3>Subtotal</h3>
+            <p>
+              ${all_products.reduce((acc, product) => {
                 return acc + cartItems[product.id] * product.new_price;
-              }, 0).toFixed(2)}</h2>
-              <h2>Subtotal</h2>
-              <h2>${all_products.reduce((acc, product) => {
-                return acc + cartItems[product.id] * product.new_price;
-              }, 0).toFixed(2)}</h2>
-            </div>
-            <div className='cart-items-promo'>
-              <p><span>Have a promo code?</span></p>
-              <input type='text' placeholder='Promo Code' />
-              <button>Apply</button>
-            </div>
-            <div className='checkout-button'>
-              <button>Checkout</button>
-            </div>
+              }, 0).toFixed(2)}
+            </p>
           </div>
+          <div className='cart-items-total-shipping'>
+            <h3>Shipping</h3>
+            <p>Free</p>
+          </div>
+          <div className='cart-items-total-total'>
+            <h3>Total</h3>
+            <p>
+              ${all_products.reduce((acc, product) => {
+                return acc + cartItems[product.id] * product.new_price;
+              }, 0).toFixed(2)}
+            </p>
+          </div>
+        </div>
+        <div className='cart-items-promo'>
+          <input type='text' placeholder='Promo Code' />
+          <button>Apply</button>
+        </div>
+        <div className='checkout-button'>
+          <button>Checkout</button>
         </div>
       </div>
     </div>
