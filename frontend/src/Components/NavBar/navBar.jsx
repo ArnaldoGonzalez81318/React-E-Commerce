@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ShopContext } from '../../Context/shopContext'
 import logo from '../Assets/logo.png'
 import cart_icon from '../Assets/cart_icon.png'
+import { Sling as Hamburger } from 'hamburger-react'
 
 import './navBar.css'
 
@@ -11,11 +12,19 @@ export const NavBar = () => {
   const { cartItems } = useContext(ShopContext)
   const menuRef = useRef()
 
+  const dropdownToggle = (e) => {
+    menuRef.current.classList.toggle("navbar-menu-visible") // toggle the menu
+    e.target.classList.toggle("navbar-dropdown-active") // toggle the dropdown icon
+  }
+
   return (
     <div className="navbar">
       <div className="navbar-logo">
         <img src={logo} alt="logo" />
         <h1>Shop</h1>
+      </div>
+      <div className="navbar-dropdown" onClick={dropdownToggle}>
+        <Hamburger size={20} />
       </div>
       <ul className="navbar-menu" ref={menuRef}>
         <li onClick={() => setMenu("Shop All")} className={menu === "Shop All" ? "active" : ""}>
