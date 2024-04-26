@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ShopContext } from '../../Context/shopContext'
 import logo from '../Assets/logo.png'
@@ -9,6 +9,7 @@ import './navBar.css'
 export const NavBar = () => {
   const [menu, setMenu] = useState("Shop All")
   const { cartItems } = useContext(ShopContext)
+  const menuRef = useRef()
 
   return (
     <div className="navbar">
@@ -16,7 +17,7 @@ export const NavBar = () => {
         <img src={logo} alt="logo" />
         <h1>Shop</h1>
       </div>
-      <ul className='navbar-menu'>
+      <ul className="navbar-menu" ref={menuRef}>
         <li onClick={() => setMenu("Shop All")} className={menu === "Shop All" ? "active" : ""}>
           <Link to="/">Shop All</Link>
         </li>
