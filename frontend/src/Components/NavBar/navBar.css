@@ -121,6 +121,10 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.navbar-dropdown {
+  display: none;
+}
+
 @media screen and (max-width: 1024px) {
   .navbar {
     padding: 1rem;
@@ -149,6 +153,19 @@
 @media screen and (max-width: 768px) {
   .navbar-logo h1 {
     font-size: 1.2rem;
+  }
+
+  .navbar-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: absolute;
+    top: 4rem;
+    right: 1rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 0.5rem;
   }
 
   .navbar-login-btn {
