@@ -121,18 +121,44 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1024px) {
   .navbar {
-    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-login-cart {
     gap: 1rem;
   }
 
-  .navbar-logo {
-    margin-top: 1rem;
+  .navbar-login-btn {
+    width: 6rem;
+    font-size: 1rem;
   }
 
-  .navbar-logo img {
-    width: 2.5rem;
-    height: 2.5rem;
+  .cart-count {
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-logo h1 {
+    font-size: 1.2rem;
+  }
+
+  .navbar-login-btn {
+    width: 5rem;
+    font-size: 1rem;
+  }
+
+  .cart-count {
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.7rem;
   }
 }
