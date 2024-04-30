@@ -43,8 +43,9 @@
 
 .shop-category-products {
   display: flex;
+  gap: 1.25rem;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
   margin: 2rem auto;
