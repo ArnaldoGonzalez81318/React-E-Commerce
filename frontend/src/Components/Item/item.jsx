@@ -12,7 +12,9 @@ const Item = (props) => {
         </Link>
       </div>
       <div className="item-details">
-        <h3>{props.name}</h3>
+        <Link to={`/product/${props.id}`} onClick={() => window.scrollTo(0, 0)}>
+          <h3>{props.name}</h3>
+        </Link>
         <div className="item-price">
           <p className="item-price-old">${props.old_price}</p>
           <p className="item-price-new">${props.new_price}</p>
