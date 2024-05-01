@@ -1,33 +1,34 @@
 .newsletters {
-  width: 65%;
-  height: 40vh;
-  margin: 0 auto 150px auto;
-  padding: 0 140px;
-  background: linear-gradient(180deg, #FDE1FF 0%, #E1FFEA22 60%);
+  max-width: 1500px;
+  margin: 0 auto;
+  width: 100%;
+  height: 500px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  background: linear-gradient(180deg, #FDE1FF 0%, #E1FFEA22 60%);
 }
 
 .newsletters h2 {
   color: #454545;
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
 }
 
 .newsletters p {
   color: #454545;
   font-size: 1.5rem;
   font-weight: 400;
-  text-align: center;
+  margin-bottom: 20px;
 }
 
 .newsletters form {
-  width: 730px;
-  height: 70px;
+  width: 100%;
+  max-width: 700px;
+  height: 60px;
   background-color: white;
   display: flex;
   justify-content: space-between;
@@ -38,10 +39,12 @@
 }
 
 .newsletters form input {
-  width: 500px;
-  margin-left: 20px;
+  flex: 2;
+  width: 100%;
+  height: 100%;
+  padding: 0 20px;
   border: none;
-  outline: none;
+  border-radius: 80px;
   color: #616161;
   font-family: Poppins, sans-serif;
   font-size: 1.5rem;
@@ -53,8 +56,9 @@
 }
 
 .newsletters form button {
-  width: 210px;
-  height: 70px;
+  flex: 1;
+  width: 200px;
+  height: 100%;
   background: black;
   color: white;
   font-size: 1.5rem;
