@@ -18,6 +18,7 @@ const Home = () => {
           <img src={hand_icon} alt="hand icon" />
         </div>
         <div className="home-arrow">
+          <span>Shop Now</span>
           <img src={arrow} alt="arrow" />
         </div>
       </div>
