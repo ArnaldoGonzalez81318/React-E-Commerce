@@ -59,10 +59,11 @@
 
 @media screen and (max-width: 768px) {
   .offers-left {
-    padding: 50px 20px;
+    align-items: flex-start;
+    padding-left: 100px;
   }
 
-  .offers-right {
-    display: none;
+  .offers-left p {
+    text-align: left;
   }
 }
