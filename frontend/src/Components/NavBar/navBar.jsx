@@ -23,7 +23,7 @@ export const NavBar = () => {
         <img src={logo} alt="logo" />
         <h1>Shop</h1>
       </div>
-      <div className="navbar-dropdown" onClick={dropdownToggle}>
+      <div className="navbar-dropdown-icon" onClick={dropdownToggle}>
         <Hamburger size={20} />
       </div>
       <ul className="navbar-menu" ref={menuRef}>
