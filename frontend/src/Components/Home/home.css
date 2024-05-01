@@ -2,6 +2,11 @@
   height: 100vh;
   background: linear-gradient(180deg, #fde1ff, #e1ffea22 60%);
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 0 20px;
 }
 
 .home-left {
@@ -40,6 +45,11 @@
   height: 50px;
 }
 
+.home-arrow span {
+  display: inline-block;
+  transform: translateY(2px);
+}
+
 .home-arrow {
   width: 300px;
   height: 70px;
@@ -62,4 +72,63 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media screen and (max-width: 1024px) {
+  .home-left h2 {
+    font-size: 2rem;
+  }
+
+  .home-left p {
+    font-size: 1.25rem;
+  }
+
+  .home-right img {
+    width: 100%;
+  }
+
+  .home-hand-icon img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .home-arrow {
+    width: 250px;
+    height: 60px;
+    font-size: 1.25rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .home {
+    height: 100%;
+    padding: 50px 20px;
+  }
+
+  .home-right {
+    display: none;
+  }
+
+  .home-left h2 {
+    font-size: 2.5rem;
+  }
+
+  .home-left p {
+    font-size: 1.5rem;
+  }
+
+  .home-hand-icon p {
+    font-size: 2rem;
+  }
+
+  .home-hand-icon img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .home-arrow {
+    width: 300px;
+    height: 70px;
+    font-size: 1.5rem;
+  }
 }
