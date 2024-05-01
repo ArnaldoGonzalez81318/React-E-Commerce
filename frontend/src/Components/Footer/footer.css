@@ -1,5 +1,6 @@
 .footer {
-  padding: 3rem 0;
+  background-color: #fbfbfb;
+  padding: 2rem 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,8 +27,10 @@
 
 .footer-links {
   color: #252525;
-  font-size: 1.2rem;
+  font-size: 1rem;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
   list-style: none;
 }
@@ -38,6 +41,7 @@
 
 .footer-links li a {
   color: #252525;
+  padding: 0.5rem;
   text-decoration: none;
 }
 
@@ -89,7 +93,7 @@
   filter: invert(1);
 }
 
-.footer-copyrigth {
+.footer-copyright {
   width: 100%;
   color: #1a1a1a;
   font-size: 1rem;
@@ -99,10 +103,15 @@
   gap: 0.5rem;
 }
 
-.footer-copyrigth hr {
+.footer-copyright hr {
   width: 80%;
   height: 1px;
   background-color: #c7c7c7;
   border: none;
   border-radius: 10px;
+}
+
+.footer-copyright p {
+  color: #1a1a1a;
+  font-size: 0.8rem;
 }
