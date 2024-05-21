@@ -1,13 +1,15 @@
 .login-signup {
   width: 100%;
-  height: 80vh;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #fce3fe;
-  padding-top: 100px;
+  padding: 50px 0;
 }
 
 .login-signup-container {
   width: 580px;
-  height: 600px;
   margin: 0 auto;
   padding: 40px 60px;
   background-color: #fff;
@@ -20,15 +22,15 @@
 }
 
 .login-signup-container h2 {
+  font-size: 2.5rem;
+  color: #ff4141;
   text-align: center;
-  margin: 20px 0;
-  color: #ff6b81;
 }
 
-.login-signup-container p {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #5c5c5c;
+.login-signup-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .login-signup-container p span {
@@ -84,18 +86,44 @@
   background-color: #ff6b81;
 }
 
+.login-signup-switch {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.login-signup-switch p {
+  font-size: 1rem;
+  color: #5c5c5c;
+}
+
+.login-signup-switch p span {
+  color: #ff4141;
+  cursor: pointer;
+}
+
 .signup-agreement {
-  text-align: center;
+  width: 100%;
   margin-top: 20px;
   color: #5c5c5c;
 }
 
+.signup-agreement label {
+  display: flex;
+  align-items: center;
+}
+
 .signup-agreement input {
-  margin-right: 5px;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .signup-agreement p {
-  margin-bottom: 10px;
+  font-size: 0.875rem;
+  text-align: center;
 }
 
 .signup-agreement p span {
