@@ -114,6 +114,7 @@
 .signup-agreement label {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .signup-agreement input {
@@ -133,4 +134,33 @@
 
 .signup-agreement p span:hover {
   text-decoration: underline;
+}
+
+@media screen and (max-width: 768px) {
+  .login-signup-container {
+    width: 90%;
+    padding: 30px;
+  }
+
+  .login-signup-container h2 {
+    font-size: 2rem;
+  }
+
+  .login-signup-form input {
+    height: 60px;
+    font-size: 1rem;
+  }
+
+  .login-signup-form button {
+    height: 60px;
+    font-size: 1.25rem;
+  }
+
+  .login-signup-switch p {
+    font-size: 0.875rem;
+  }
+
+  .signup-agreement p {
+    font-size: 0.75rem;
+  }
 }
