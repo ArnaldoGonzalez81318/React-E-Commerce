@@ -13,7 +13,7 @@
 .breadcrumbs-container {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-start;
   margin: 20px 0;
 }
 
@@ -22,6 +22,11 @@
   text-transform: capitalize;
   text-decoration: none;
   transition: 0.3s;
+}
+
+.breadcrumbs-container a::after {
+  content: '> ';
+  margin: 0 10px;
 }
 
 .breadcrumbs-container a:hover {
