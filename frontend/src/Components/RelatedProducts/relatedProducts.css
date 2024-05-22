@@ -28,5 +28,42 @@
 .related-products-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
+}
+
+@media screen and (max-width: 1024px) {
+  .related-products {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .related-products h2 {
+    font-size: 1.2rem;
+  }
+
+  .related-products-container {
+    gap: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .related-products {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .related-products h2 {
+    font-size: 1rem;
+  }
+
+  .item {
+    width: 45%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .item {
+    width: 100%;
+  }
 }
