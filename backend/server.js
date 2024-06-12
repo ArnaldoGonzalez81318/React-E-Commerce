@@ -54,6 +54,49 @@ app.post('/upload', upload.single('productImage'), (req, res) => {
   });
 });
 
+// Schema for the products collection.
+const Product = mongoose.model('Product', {
+  id: { type: Number, required: true },
+  name: { type: String, required: true },
+  image: { type: String, required: true },
+  category: { type: String, required: true },
+  new_price: { type: Number, required: true },
+  old_price: { type: Number, required: true },
+  description: { type: String, required: true },
+  rating: { type: Number, required: true },
+  numReviews: { type: Number, required: true },
+  date: { type: Date, default: Date.now },
+  available: { type: Boolean, required: true }
+});
+
+app.post('/add-product', async (req, res) => {
+  const product = new Product({
+    id: req.body.id,
+    name: req.body.name,
+    image: req.body.image,
+    category: req.body.category,
+    new_price: req.body.new_price,
+    old_price: req.body.old_price,
+  });
+  console.log('Product:', product);
+
+  try {
+    await product.save();
+    console.log('Product saved:', product);
+    res.json({
+      success: 1,
+      name: req.body.name,
+      message: 'Product saved successfully'
+    });
+  } catch (err) {
+    console.log('Error:', err);
+    res.status(500).json({
+      success: 0,
+      message: err.message
+    });
+  }
+});
+
 // Start the server.
 app.listen(port, (err) => {
   if (err) {
