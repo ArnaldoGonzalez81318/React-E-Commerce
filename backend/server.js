@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
-const exp = require('constants');
 
 app.use(express.json());
 app.use(cors());
@@ -19,28 +18,37 @@ mongoose.connect('mongodb+srv://arnaldolgonzalez96:jNfxhOUIu6tR0815@cluster0.lts
 
 // API routes.
 app.get('/', (req, res) => { // Home route.
-  res.send('Hello World!');
+  res.send('Welcome to the e-commerce API');
 });
 
 // Image upload route using multer package.
 const storage = multer.diskStorage({
-  destination: './uploads/images',
+  destination: (req, file, cb) => {
+    cb(null, './uploads/images');
+  },
   filename: (req, file, cb) => {
-    return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
+    cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
   }
 });
 
 // Upload image middleware.
 const upload = multer({
-  storage: storage
+  storage: storage,
 });
 
-// Upload image endpoint.
-app.use('/images', express.static(path.join(__dirname, 'uploads/images'))); // Serve images from the uploads folder.
+// Serve images from the uploads folder.
+app.use('/images', express.static(path.join(__dirname, 'uploads/images')));
 
 // Upload image route. The image will be uploaded to the uploads folder and the image URL will be sent back to the client.
-app.post('/upload', upload.single('image'), (req, res) => {
-  res.json({ // Send the image URL back to the client.
+app.post('/upload', upload.single('productImage'), (req, res) => {
+  console.log('File uploaded:', req.file);
+  if (!req.file) {
+    return res.status(400).json({
+      success: 0,
+      message: 'Image not uploaded'
+    });
+  }
+  res.status(200).json({
     success: 1,
     profile_url: `http://localhost:${port}/images/${req.file.filename}`
   });
