@@ -70,8 +70,19 @@ const Product = mongoose.model('Product', {
 });
 
 app.post('/add-product', async (req, res) => {
+  let products = await Product.find();
+  let id;
+
+  if (products.length > 0) { // If there are products in the database, get the last product and increment the id by 1.
+    let lastProductArr = products.slice(-1);
+    let lastProduct = lastProductArr[0];
+    id = lastProduct.id + 1;
+  } else { // If there are no products in the database, set the id to 1.
+    id = 1;
+  }
+
   const product = new Product({
-    id: req.body.id,
+    id: id,
     name: req.body.name,
     image: req.body.image,
     category: req.body.category,
