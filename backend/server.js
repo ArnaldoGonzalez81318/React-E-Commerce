@@ -24,10 +24,10 @@ app.get('/', (req, res) => { // Home route.
 // Image upload route using multer package.
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './uploads/images');
+    cb(null, 'upload/images');
   },
   filename: (req, file, cb) => {
-    cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
 
@@ -37,7 +37,7 @@ const upload = multer({
 });
 
 // Serve images from the uploads folder.
-app.use('/images', express.static(path.join(__dirname, 'uploads/images')));
+app.use('/images', express.static(path.join(__dirname, 'upload/images')));
 
 // Upload image route. The image will be uploaded to the uploads folder and the image URL will be sent back to the client.
 app.post('/upload', upload.single('productImage'), (req, res) => {
@@ -69,6 +69,7 @@ const Product = mongoose.model('Product', {
   available: { type: Boolean, required: true }
 });
 
+// Endpoint to add a product to the database.
 app.post('/add-product', async (req, res) => {
   let products = await Product.find();
   let id;
@@ -106,6 +107,36 @@ app.post('/add-product', async (req, res) => {
       message: err.message
     });
   }
+});
+
+// Endpoint to delete a product from the database by id.
+app.post('/delete-product', async (req, res) => {
+  await Product.findOneAndDelete({ id: req.body.id }, (err, product) => {
+    if (err) {
+      console.log('Error:', err);
+      res.status(500).json({
+        success: 0,
+        message: err.message
+      });
+    } else {
+      console.log('Product deleted:', product);
+      res.json({
+        success: 1,
+        name: product.name,
+        message: 'Product deleted successfully'
+      });
+    }
+  });
+});
+
+// Endpoint to get all products from the database.
+app.get('/products', async (req, res) => {
+  let products = await Product.find();
+  console.log('Products:', products);
+  res.json({
+    success: 1,
+    products: products
+  });
 });
 
 // Start the server.
