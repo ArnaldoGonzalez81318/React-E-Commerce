@@ -7,27 +7,25 @@ import './Sidebar.css'
 const Sidebar = () => {
   return (
     <div className="sidebar">
-      <div className="sidebarWrapper">
-        <div className="sidebarMenu">
-          <h3 className="sidebarTitle">Dashboard</h3>
-          <ul className="sidebarList">
+      <div className="sidebar-wrapper">
+        <div className="sidebar-menu">
+          <h3 className="sidebar-title">Product</h3>
+          <ul className="sidebar-list">
             <Link to="/add-product" className="link">
-              <li className="sidebarListItem">
-                <img src={addProductIcon} alt="Add Product" className="sidebarIcon" />
-                <span className="sidebarListItemText">Add Product</span>
+              <li className="sidebar-list-item">
+                <img src={addProductIcon} alt="Add Product" className="sidebar-list-item-icon" />
+                <span className="sidebar-list-item-text">Add Product</span>
               </li>
             </Link>
             <Link to="/product-list" className="link">
-              <li className="sidebarListItem">
-                <img src={listProductIcon} alt="List Product" className="sidebarIcon" />
-                <span className="sidebarListItemText">Product List</span>
+              <li className="sidebar-list-item">
+                <img src={listProductIcon} alt="List Product" className="sidebar-list-item-icon" />
+                <span className="sidebar-list-item-text">List Product</span>
               </li>
             </Link>
           </ul>
         </div>
-        <div className="sidebarMenu">
-          <h3 className="sidebarTitle">Quick Menu</h3>
-        </div>
+        <div className="sidebar-menu"></div>
       </div>
     </div>
   )
