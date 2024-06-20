@@ -1,0 +1,19 @@
+.admin {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  height: 100vh;
+}
+
+.admin-content {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  gap: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .admin {
+    padding: 1rem;
+  }
+}
