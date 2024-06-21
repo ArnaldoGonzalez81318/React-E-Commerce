@@ -25,7 +25,6 @@ const Sidebar = () => {
             </Link>
           </ul>
         </div>
-        <div className="sidebar-menu"></div>
       </div>
     </div>
   )
