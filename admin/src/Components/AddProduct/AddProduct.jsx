@@ -23,6 +23,11 @@ const AddProduct = () => {
     })
   }
 
+  const addProductHandler = async (e) => {
+    console.log('Product Details:', productDetails)
+    e.preventDefault()
+  }
+
   return (
     <div className="add-product">
       <div className="add-product-wrapper">
@@ -108,7 +113,12 @@ const AddProduct = () => {
               onChange={imageHandler}
             />
           </div>
-          <button type="submit" className="add-product-form-button">Add Product</button>
+          <button
+            type="submit"
+            className="add-product-form-button"
+            onClick={addProductHandler}>
+            Add Product
+          </button>
         </form>
       </div>
     </div>
