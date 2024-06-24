@@ -1,8 +1,28 @@
-// import React from 'react'
+import { useState } from 'react'
 import uploadArea from '../../assets/upload_area.svg'
 import './AddProduct.css'
 
 const AddProduct = () => {
+  const [image, setImage] = useState(null)
+  const [productDetails, setProductDetails] = useState({
+    name: '',
+    image: '',
+    category: '',
+    old_price: '',
+    new_price: ''
+  })
+
+  const imageHandler = (e) => {
+    setImage(e.target.files[0])
+  }
+
+  const changeHandler = (e) => {
+    setProductDetails({
+      ...productDetails,
+      [e.target.name]: e.target.value
+    })
+  }
+
   return (
     <div className="add-product">
       <div className="add-product-wrapper">
@@ -16,6 +36,8 @@ const AddProduct = () => {
               className="add-product-form-input"
               name='name'
               placeholder="Product Name"
+              onChange={changeHandler}
+              value={productDetails.name}
             />
           </div>
           <div className="add-product-form-group-row">
@@ -27,6 +49,8 @@ const AddProduct = () => {
                 className="add-product-form-input"
                 name='old_price'
                 placeholder='Price'
+                onChange={changeHandler}
+                value={productDetails.old_price}
               />
             </div>
             <div className="add-product-form-group">
@@ -37,12 +61,20 @@ const AddProduct = () => {
                 className="add-product-form-input"
                 name='new_price'
                 placeholder='Offer Price'
+                onChange={changeHandler}
+                value={productDetails.new_price}
               />
             </div>
           </div>
           <div className="add-product-form-group">
             <label htmlFor="category" className="add-product-form-label">Category</label>
-            <select name="category" id="category" className="add-product-form-select">
+            <select
+              name="category"
+              id="category"
+              className="add-product-form-select"
+              onChange={changeHandler}
+              value={productDetails.category}
+            >
               <option value="Select Category" defaultValue={true}>Select Category</option>
               <option value="womens">Womens</option>
               <option value="mens">Mens</option>
@@ -60,7 +92,11 @@ const AddProduct = () => {
           </div>
           <div className="add-product-form-group">
             <label htmlFor="image" className="add-product-form-label-upload">
-              <img src={uploadArea} alt="Upload Area" className="add-product-form-upload-thumbnail" />
+              <img
+                src={image ? URL.createObjectURL(image) : uploadArea}
+                alt="Upload Area"
+                className="add-product-form-upload-thumbnail"
+              />
             </label>
             <input
               type="file"
@@ -69,6 +105,7 @@ const AddProduct = () => {
               name='image'
               accept="image/*"
               hidden
+              onChange={imageHandler}
             />
           </div>
           <button type="submit" className="add-product-form-button">Add Product</button>
