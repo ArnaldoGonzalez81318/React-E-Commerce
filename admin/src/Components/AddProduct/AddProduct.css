@@ -40,6 +40,24 @@
   gap: 20px;
 }
 
+.add-product-form-group-checkbox {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.add-product-form-group-checkbox-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000;
+}
+
+.add-product-form-group-checkbox-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
 .add-product-form-label {
   font-size: 1rem;
   font-weight: 500;
