@@ -59,7 +59,7 @@ const AddProduct = () => {
       }).catch(err => { // Handling any error
         console.log('Error:', err);
       });
-    
+
     // If the response data is available and the success property is true, then update the product image property with the image URL.
     if (responseData && responseData.success) {
       product.image = responseData.profile_url;
