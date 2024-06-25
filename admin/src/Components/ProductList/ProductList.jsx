@@ -28,14 +28,12 @@ const ProductList = () => {
     return allProducts.map(product => (
       <div key={product.id} className="product-list-item">
         <img src={product.image} alt={product.name} className="product-list-item-image" />
-        <p>{product.id}</p>
         <p>{product.name}</p>
         <p>{product.old_price}</p>
         <p>{product.new_price}</p>
         <p>{product.category}</p>
         <p>
-          <button className="product-list-item-edit">Edit</button>
-          <button className="product-list-item-delete">Delete</button>
+          <button className="product-list-item-delete-btn">Delete</button>
         </p>
       </div>
     ))
@@ -51,7 +49,7 @@ const ProductList = () => {
           <p>Old Price</p>
           <p>New Price</p>
           <p>Category</p>
-          <p>Actions</p>
+          <p>Delete</p>
         </div>
         <div className="product-list-items">
           {renderProductListItems()}
