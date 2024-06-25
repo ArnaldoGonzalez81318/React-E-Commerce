@@ -1,38 +1,61 @@
-// import React from 'react'
+import { useEffect, useState } from 'react'
 import './ProductList.css'
 
 const ProductList = () => {
+  const [allProducts, setAllProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('http://localhost:4000/products')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Fetched data:', data)
+        // Check if the fetched data is an array, if not set an empty array
+        setAllProducts(Array.isArray(data.products) ? data.products : [])
+        setLoading(false)
+      })
+      .catch(err => {
+        console.log('Error:', err)
+        setLoading(false)
+      })
+  }, [])
+
+  const renderProductListItems = () => {
+    if (loading) {
+      return <p>Loading...</p>
+    }
+
+    return allProducts.map(product => (
+      <div key={product.id} className="product-list-item">
+        <img src={product.image} alt={product.name} className="product-list-item-image" />
+        <p>{product.id}</p>
+        <p>{product.name}</p>
+        <p>{product.old_price}</p>
+        <p>{product.new_price}</p>
+        <p>{product.category}</p>
+        <p>
+          <button className="product-list-item-edit">Edit</button>
+          <button className="product-list-item-delete">Delete</button>
+        </p>
+      </div>
+    ))
+  }
+
   return (
     <div className="product-list">
       <div className="product-list-wrapper">
         <h2 className="product-list-title">Product List</h2>
-        <table className="product-list-table">
-          <thead>
-            <tr>
-              <th className="product-list-table-header">No</th>
-              <th className="product-list-table-header">Name</th>
-              <th className="product-list-table-header">Price</th>
-              <th className="product-list-table-header">Description</th>
-              <th className="product-list-table-header">Image</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="product-list-table-row">
-              <td className="product-list-table-data">1</td>
-              <td className="product-list-table-data">Product 1</td>
-              <td className="product-list-table-data">1000</td>
-              <td className="product-list-table-data">Description 1</td>
-              <td className="product-list-table-data">Image 1</td>
-            </tr>
-            <tr className="product-list-table-row">
-              <td className="product-list-table-data">2</td>
-              <td className="product-list-table-data">Product 2</td>
-              <td className="product-list-table-data">2000</td>
-              <td className="product-list-table-data">Description 2</td>
-              <td className="product-list-table-data">Image 2</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="product-list-main">
+          <p>Products</p>
+          <p>Title</p>
+          <p>Old Price</p>
+          <p>New Price</p>
+          <p>Category</p>
+          <p>Actions</p>
+        </div>
+        <div className="product-list-items">
+          {renderProductListItems()}
+        </div>
       </div>
     </div>
   )
