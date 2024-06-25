@@ -1,0 +1,104 @@
+.product-list {
+  width: 100%;
+  margin: 20px auto;
+}
+
+.product-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-list-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.product-list-main {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  padding: 20px 0;
+  border-top: 1px solid #c5c5c5;
+  border-bottom: 1px solid #c5c5c5;
+}
+
+.product-list-main p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.product-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.product-list-item {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid #c5c5c5;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.product-list-item:hover {
+  background-color: #f5f5f5;
+  -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-list-item p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.product-list-item-image {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+
+.product-list-item-delete-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff0000;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.product-list-item-delete-btn:hover {
+  background-color: #ff3333;
+  -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
