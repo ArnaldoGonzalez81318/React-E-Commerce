@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import uploadArea from '../../assets/upload_area.svg'
-import './AddProduct.css'
+import { useState } from 'react';
+import uploadArea from '../../assets/upload_area.svg';
+import './AddProduct.css';
 
 const AddProduct = () => {
-  const [image, setImage] = useState(null)
+  const [image, setImage] = useState(null);
   const [productDetails, setProductDetails] = useState({
     name: "",
     image: "",
@@ -12,18 +12,19 @@ const AddProduct = () => {
     new_price: "",
     description: "",
     available: false
-  })
+  });
 
   const imageHandler = (e) => {
-    setImage(e.target.files[0])
-  }
+    setImage(e.target.files[0]);
+  };
 
   const changeHandler = (e) => {
+    const { name, value, type, checked } = e.target;
     setProductDetails({
       ...productDetails,
-      [e.target.name]: e.target.value
-    })
-  }
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
 
   const addProductHandler = async () => {
     console.log('Product Details:', productDetails);
@@ -186,4 +187,4 @@ const AddProduct = () => {
   )
 }
 
-export default AddProduct
+export default AddProduct;
