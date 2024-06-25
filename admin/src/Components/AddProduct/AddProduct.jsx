@@ -5,11 +5,13 @@ import './AddProduct.css'
 const AddProduct = () => {
   const [image, setImage] = useState(null)
   const [productDetails, setProductDetails] = useState({
-    name: '',
-    image: '',
-    category: '',
-    old_price: '',
-    new_price: ''
+    name: "",
+    image: "",
+    category: "",
+    old_price: "",
+    new_price: "",
+    description: "",
+    available: false
   })
 
   const imageHandler = (e) => {
@@ -23,10 +25,51 @@ const AddProduct = () => {
     })
   }
 
-  const addProductHandler = async (e) => {
-    console.log('Product Details:', productDetails)
-    e.preventDefault()
-  }
+  const addProductHandler = async () => {
+    console.log('Product Details:', productDetails);
+    let responseData;
+    let product = productDetails;
+    let formData = new FormData();
+
+    formData.append('productImage', image);
+
+    await fetch('http://localhost:4000/upload', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json'
+      },
+      body: formData
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Data:', data);
+        responseData = data;
+      }).catch(err => {
+        console.log('Error:', err);
+      });
+
+    if (responseData && responseData.success) {
+      product.image = responseData.profile_url;
+      console.log('Product:', product);
+
+      await fetch('http://localhost:4000/add-product', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(product)
+      })
+        .then(res => res.json())
+        .then(data => {
+          data.success ? alert('Product added successfully') : alert('Failed to add product');
+        }).catch(err => {
+          console.log('Error:', err);
+        });
+    } else {
+      alert('Failed to upload image');
+    }
+  };
 
   return (
     <div className="add-product">
@@ -93,6 +136,8 @@ const AddProduct = () => {
               className="add-product-form-textarea"
               name='description'
               placeholder='Lorem ipsum dolor sit amet, consectetur adipiscing elit...'
+              onChange={changeHandler}
+              value={productDetails.description}
             ></textarea>
           </div>
           <div className="add-product-form-group">
@@ -113,8 +158,24 @@ const AddProduct = () => {
               onChange={imageHandler}
             />
           </div>
+          <div className="add-product-form-group-checkbox">
+            <input
+              type='checkbox'
+              id='available'
+              name='available'
+              className='add-product-form-group-checkbox-input'
+              onChange={changeHandler}
+              checked={productDetails.available}
+            />
+            <label
+              htmlFor='available'
+              className='add-product-form-group-checkbox-label'
+            >
+              Available
+            </label>
+          </div>
           <button
-            type="submit"
+            type="button"
             className="add-product-form-button"
             onClick={addProductHandler}>
             Add Product
