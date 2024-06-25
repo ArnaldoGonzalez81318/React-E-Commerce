@@ -14,18 +14,28 @@ const AddProduct = () => {
     available: false
   });
 
+  // Function to handle the change event of the file input element.
   const imageHandler = (e) => {
+    // Updating the image state object with the selected image.
     setImage(e.target.files[0]);
   };
 
+  // Function to handle the change event of the input elements.
+  // This function will update the productDetails state object with the new value.
   const changeHandler = (e) => {
+    // Destructuring the event target object to get the name, value, type, and checked properties.
     const { name, value, type, checked } = e.target;
+    // Updating the productDetails state object with the new value.
     setProductDetails({
+      // Using the spread operator to copy the existing productDetails object.
       ...productDetails,
+      // Updating the value of the key in the productDetails object with the new value.
       [name]: type === 'checkbox' ? checked : value
     });
   };
 
+  // Function to handle the add product button click event.
+  // This function will send a POST request to the server to add the product.
   const addProductHandler = async () => {
     console.log('Product Details:', productDetails);
     let responseData;
@@ -34,6 +44,7 @@ const AddProduct = () => {
 
     formData.append('productImage', image);
 
+    // Sending a POST request to the server to upload the image.
     await fetch('http://localhost:4000/upload', {
       method: 'POST',
       headers: {
@@ -41,14 +52,15 @@ const AddProduct = () => {
       },
       body: formData
     })
-      .then(res => res.json())
-      .then(data => {
+      .then(res => res.json()) // Converting the response to JSON
+      .then(data => { // Accessing the response data
         console.log('Data:', data);
         responseData = data;
-      }).catch(err => {
+      }).catch(err => { // Handling any error
         console.log('Error:', err);
       });
-
+    
+    // If the response data is available and the success property is true, then update the product image property with the image URL.
     if (responseData && responseData.success) {
       product.image = responseData.profile_url;
       console.log('Product:', product);
