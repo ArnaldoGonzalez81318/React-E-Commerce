@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 
 app.use(express.json());
@@ -24,10 +25,14 @@ app.get('/', (req, res) => { // Home route.
 // Image upload route using multer package.
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'upload/images');
+    const uploadPath = 'upload/images';
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname));
   }
 });
 
@@ -52,6 +57,12 @@ app.post('/upload', upload.single('productImage'), (req, res) => {
     success: 1,
     profile_url: `http://localhost:${port}/images/${req.file.filename}`
   });
+}, (error, req, res, next) => {
+  console.error('Upload error:', error);
+  res.status(500).json({
+    success: 0,
+    message: 'Internal server error'
+  });
 });
 
 // Schema for the products collection.
@@ -63,8 +74,8 @@ const Product = mongoose.model('Product', {
   new_price: { type: Number, required: true },
   old_price: { type: Number, required: true },
   description: { type: String, required: true },
-  rating: { type: Number, required: true },
-  numReviews: { type: Number, required: true },
+  // rating: { type: Number, required: true },
+  // numReviews: { type: Number, required: true },
   date: { type: Date, default: Date.now },
   available: { type: Boolean, required: true }
 });
