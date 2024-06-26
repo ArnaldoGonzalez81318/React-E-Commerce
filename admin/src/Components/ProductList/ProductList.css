@@ -86,6 +86,7 @@
 }
 
 .product-list-item-delete-btn {
+  width: 100%;
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
@@ -110,11 +111,22 @@
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1050px) {
   .product-list-main {
+    width: 100%;
     overflow-x: auto;
   }
 
+  .product-list-header {
+    width: 1000px;
+  }
+
+  .product-list-items {
+    width: 1000px;
+  }
+}
+
+@media screen and (max-width: 768px) {
   .product-list-header {
     width: 800px;
   }
