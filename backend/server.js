@@ -7,6 +7,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
+const { error } = require('console');
 
 app.use(express.json());
 app.use(cors());
@@ -154,6 +155,70 @@ app.get('/products', async (req, res) => {
     success: 1,
     products: products
   });
+});
+
+// Schema for the users collection
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  cartData: { type: Object },
+  date: { type: Date, default: Date.now }
+});
+
+const User = mongoose.model('User', UserSchema);
+
+// Endpoint to register a new user
+app.post('/signup', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Check if the user already exists
+    const checkUser = await User.findOne({ email });
+    if (checkUser) {
+      return res.status(400).json({
+        success: false,
+        error: 'The user already exists with this email.'
+      });
+    }
+
+    // Initialize cart data
+    const cart = Array.from({ length: 300 }, () => 0);
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      cartData: cart
+    });
+
+    // Save the user to the database
+    await user.save();
+
+    // Create JWT token
+    const token = jwt.sign({ id: user._id, email: user.email }, 'secret', { expiresIn: '1h' });
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          email: user.email
+        }
+      },
+      token
+    });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Server error. Please try again later.'
+    });
+  }
 });
 
 // Start the server.
