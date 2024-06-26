@@ -105,6 +105,29 @@
   transform: scale(0.95);
 }
 
+.navbar-logout-btn {
+  width: 8rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ff4141;
+  outline: none;
+  border-radius: 75px;
+  background-color: #ff4141;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-logout-btn:hover {
+  background-color: #fff;
+  color: #ff4141;
+}
+
+.navbar-logout-btn:active {
+  transform: scale(0.95);
+}
+
 .cart-count {
   position: absolute;
   top: -5px;
