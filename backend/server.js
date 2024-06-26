@@ -269,6 +269,17 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Endpoint for new collections
+app.get('/collections', async (req, res) => {
+  let products = await Product.find();
+  let collections = products.slice(1).slice(-8);
+
+  res.json({
+    success: 1,
+    collections: collections
+  });
+});
+
 // Start the server.
 app.listen(port, (err) => {
   if (err) {
