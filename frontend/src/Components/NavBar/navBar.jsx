@@ -41,9 +41,16 @@ export const NavBar = () => {
         </li>
       </ul>
       <div className="navbar-login-cart">
-        <Link to="login" >
-          <button className="navbar-login-btn">Login</button>
-        </Link>
+        {localStorage.getItem('authToken') ? (
+          <button className='navbar-logout-btn' onClick={() => {
+            localStorage.removeItem('authToken')
+            window.location.replace('/')
+          }}>Logout</button>
+        ) : (
+          <Link to="login" >
+            <button className="navbar-login-btn">Login</button>
+          </Link>
+        )}
         <Link to="cart">
           <img src={cart_icon} alt="cart" />
           <span className="cart-count">
