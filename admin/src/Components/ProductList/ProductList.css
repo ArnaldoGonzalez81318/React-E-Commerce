@@ -25,9 +25,10 @@
   text-transform: capitalize;
 }
 
-.product-list-main {
+.product-list-header {
   display: grid;
   grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr;
+  align-items: center;
   gap: 20px;
   width: 100%;
   padding: 20px 0;
@@ -39,7 +40,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: #000;
-  text-align: center;
+  text-align: left;
   text-transform: capitalize;
 }
 
@@ -74,7 +75,7 @@
   font-size: 1rem;
   font-weight: 500;
   color: #000;
-  text-align: center;
+  text-align: left;
   text-transform: capitalize;
 }
 
@@ -106,5 +107,19 @@
 @media screen and (min-width: 768px) {
   .product-list {
     width: 95%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .product-list-main {
+    overflow-x: auto;
+  }
+
+  .product-list-header {
+    width: 800px;
+  }
+
+  .product-list-items {
+    width: 800px;
   }
 }
