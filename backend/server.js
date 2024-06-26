@@ -22,21 +22,25 @@ app.get('/', (req, res) => { // Home route.
   res.send('Welcome to the E-commerce API');
 });
 
-// Image upload route using multer package.
+// Define storage configuration for multer
 const storage = multer.diskStorage({
+  // Set the destination for the uploaded files
   destination: (req, file, cb) => {
-    const uploadPath = 'upload/images';
+    const uploadPath = 'upload/images'; // Directory to store images
+    // Check if the directory exists, if not create it
     if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
+      fs.mkdirSync(uploadPath, { recursive: true }); // Create directory recursively if it doesn't exist
     }
-    cb(null, uploadPath);
+    cb(null, uploadPath); // Pass the directory path to the callback
   },
+  // Define the filename for the uploaded files
   filename: (req, file, cb) => {
+    // Create a unique filename using the field name, current timestamp, and original file extension
     cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname));
   }
 });
 
-// Upload image middleware.
+// Configure multer with the defined storage settings
 const upload = multer({
   storage: storage,
 });
