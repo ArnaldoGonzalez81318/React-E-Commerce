@@ -213,7 +213,7 @@ app.post('/signup', async (req, res) => {
       token
     });
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Error during signup:', err);
     res.status(500).json({
       success: false,
       error: 'Server error. Please try again later.'
