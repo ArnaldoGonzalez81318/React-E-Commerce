@@ -19,7 +19,7 @@ mongoose.connect('mongodb+srv://arnaldolgonzalez96:jNfxhOUIu6tR0815@cluster0.lts
 
 // API routes.
 app.get('/', (req, res) => { // Home route.
-  res.send('Welcome to the e-commerce API');
+  res.send('Welcome to the E-commerce API');
 });
 
 // Image upload route using multer package.
