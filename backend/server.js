@@ -6,8 +6,8 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 const cors = require('cors');
-const { error } = require('console');
 
 app.use(express.json());
 app.use(cors());
@@ -212,6 +212,54 @@ app.post('/signup', async (req, res) => {
       },
       token
     });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Server error. Please try again later.'
+    });
+  }
+});
+
+// Endpoint to login a user
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if the user exists
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid email or password.'
+      });
+    } else {
+      // Check if the password is correct using bcrypt,
+      // compare the password from the request with the hashed password in the database
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (!passwordMatch) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid email or password.'
+        });
+      }
+
+      // Create JWT token
+      const token = jwt.sign({ id: user._id, email: user.email }, 'secret', { expiresIn: '1h' });
+
+      res.json({
+        success: true,
+        data: {
+          user: {
+            id: user._id,
+            email: user.email
+          }
+        },
+        token
+      });
+    }
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({
