@@ -35,6 +35,7 @@
 
 .login-signup-container p span {
   color: #ff4141;
+  margin-left: 5px;
   cursor: pointer;
 }
 
@@ -54,7 +55,7 @@
 
 .login-signup-form input {
   width: 100%;
-  height: 70px;
+  height: 50px;
   color: #5c5c5c;
   font-size: 1.125rem;
   padding-left: 20px;
@@ -69,7 +70,7 @@
 
 .login-signup-form button {
   width: 100%;
-  height: 70px;
+  height: 50px;
   margin-top: 20px;
   background-color: #ff4141;
   color: #fff;
@@ -102,6 +103,7 @@
 
 .login-signup-switch p span {
   color: #ff4141;
+  margin-left: 5px;
   cursor: pointer;
 }
 
@@ -129,6 +131,7 @@
 
 .login-signup-agreement p span {
   color: #ff4141;
+  margin-left: 5px;
   cursor: pointer;
 }
 
@@ -156,7 +159,7 @@
 
 .login-signup-social button {
   width: 100%;
-  height: 70px;
+  height: 50px;
   background-color: #fff;
   border: 1px solid #ff4141;
   border-radius: 75px;
