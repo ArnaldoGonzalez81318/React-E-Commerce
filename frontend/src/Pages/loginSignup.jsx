@@ -2,58 +2,53 @@ import React, { useState } from 'react';
 import './CSS/loginSignup.css';
 
 const LoginSignup = () => {
-  const [isSignUp, setIsSignUp] = useState(true);
-
-  const handleSwitchForm = () => {
-    setIsSignUp(!isSignUp);
-  };
+  const [state, setState] = useState('Login');
 
   return (
     <div className='login-signup'>
       <div className="login-signup-container">
-        {isSignUp ? (
-          <>
-            <h2>Sign Up</h2>
-            <form className="login-signup-form">
-              <input type="text" placeholder="Full Name" />
-              <input type="email" placeholder="Email" />
-              <input type="password" placeholder="Password" />
-              <input type="password" placeholder="Confirm Password" />
-              <button>Sign Up</button>
-            </form>
-            <div className="login-signup-switch">
-              <p>Already have an account? <span onClick={handleSwitchForm}>Log in</span></p>
-            </div>
-            <div className="signup-agreement">
-              <label>
-                <input type="checkbox" />
-                <p>
-                  By signing up, you agree to our&nbsp;
-                  <span>Terms</span> and <span>Privacy Policy</span>
-                </p>
-              </label>
-            </div>
-          </>
-        ) : (
-          <>
-            <h2>Log In</h2>
-            <form className="login-signup-form">
-              <input type="email" placeholder="Email" />
-              <input type="password" placeholder="Password" />
-              <button>Log In</button>
-            </form>
-            <div className="login-signup-switch">
-              <p>Don't have an account? <span onClick={handleSwitchForm}>Sign Up</span></p>
-            </div>
-            <div className="signup-agreement">
-              <input type="checkbox" />
-              <p>
-                By logging in, you agree to our&nbsp;
-                <span>Terms</span> and <span>Privacy Policy</span>
-              </p>
-            </div>
-          </>
+        <div className="login-signup-header">
+          <h2>{state}</h2>
+        </div>
+        <form className="login-signup-form">
+          {state === 'Login' ? null : (
+            <input type="text" placeholder="Full Name" />
+          )}
+          <input type="email" placeholder="Email" />
+          <input type="password" placeholder="Password" />
+          {state === 'Login' ? null : (
+            <input type="password" placeholder="Confirm Password" />
+          )}
+          <button type="submit">{state === 'Login' ? 'Login' : 'Signup'}</button>
+        </form>
+        <div className="login-signup-switch">
+          <p>
+            {state === 'Login'
+              ? "Don't have an account?"
+              : 'Already have an account?'}
+            <span onClick={() => setState(state === 'Login' ? 'Signup' : 'Login')}>
+              {state === 'Login' ? 'Signup' : 'Login'}
+            </span>
+          </p>
+        </div>
+        {state === 'Login' ? null : (
+          <div className="login-signup-agreement">
+            <p>
+              By creating an account, you agree to our <span>Terms & Privacy</span>.
+            </p>
+          </div>
         )}
+        <div className="login-signup-footer">
+          {state === 'Login' ? (
+            <p>Or login with your social account</p>
+          ) : (
+            <p>Or signup with your social account</p>
+          )}
+          <div className="login-signup-social">
+            <button>Sign in with Facebook</button>
+            <button>Sign in with Google</button>
+          </div>
+        </div>
       </div>
     </div>
   );
