@@ -44,15 +44,17 @@ const ProductList = () => {
       <div className="product-list-wrapper">
         <h2 className="product-list-title">Product List</h2>
         <div className="product-list-main">
-          <p>Products</p>
-          <p>Title</p>
-          <p>Old Price</p>
-          <p>New Price</p>
-          <p>Category</p>
-          <p>Delete</p>
-        </div>
-        <div className="product-list-items">
-          {renderProductListItems()}
+          <div className="product-list-header">
+            <p>Products</p>
+            <p>Title</p>
+            <p>Old Price</p>
+            <p>New Price</p>
+            <p>Category</p>
+            <p>Delete</p>
+          </div>
+          <div className="product-list-items">
+            {renderProductListItems()}
+          </div>
         </div>
       </div>
     </div>
