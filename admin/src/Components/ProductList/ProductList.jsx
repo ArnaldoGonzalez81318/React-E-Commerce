@@ -20,6 +20,29 @@ const ProductList = () => {
       })
   }, [])
 
+  // Remove product from the list when delete button is clicked, using the product id.
+  const deleteProduct = async (id) => {
+    await fetch(`http://localhost:4000/delete-product/${id}`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id: id })
+    })
+    await fetch('http://localhost:4000/products')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Fetched data:', data)
+        setAllProducts(Array.isArray(data.products) ? data.products : [])
+        setLoading(false)
+      })
+      .catch(err => {
+        console.log('Error:', err)
+        setLoading(false)
+      })
+  }
+
   const renderProductListItems = () => {
     if (loading) {
       return <p>Loading...</p>
@@ -33,7 +56,7 @@ const ProductList = () => {
         <p>${product.new_price}</p>
         <p>{product.category}</p>
         <p>
-          <button className="product-list-item-delete-btn">Delete</button>
+          <button className="product-list-item-delete-btn" onClick={() => deleteProduct(product.id)}>Delete</button>
         </p>
       </div>
     ))
