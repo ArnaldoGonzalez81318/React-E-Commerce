@@ -4,6 +4,16 @@ import './CSS/loginSignup.css';
 const LoginSignup = () => {
   const [state, setState] = useState('Login');
 
+  const login = async (e) => {
+    e.preventDefault();
+    console.log('Login');
+  }
+
+  const signup = async (e) => {
+    e.preventDefault();
+    console.log('Signup');
+  }
+
   return (
     <div className='login-signup'>
       <div className="login-signup-container">
@@ -12,14 +22,38 @@ const LoginSignup = () => {
         </div>
         <form className="login-signup-form">
           {state === 'Login' ? null : (
-            <input type="text" placeholder="Full Name" />
+            <input
+              type="text"
+              placeholder="Full Name"
+            />
           )}
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
+          <input
+            type="email"
+            placeholder="Email"
+            autoComplete="username"
+          />
+          {state === 'Login' ? (
+            <input
+              type="password"
+              placeholder="Password"
+              autoComplete="current-password"
+            />
+          ) : (
+            <input
+              type="password"
+              placeholder="Password"
+              autoComplete="new-password"
+            />
+          )}
           {state === 'Login' ? null : (
-            <input type="password" placeholder="Confirm Password" />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+            />
           )}
-          <button type="submit">{state === 'Login' ? 'Login' : 'Signup'}</button>
+          <button type="submit" onClick={state === 'Login' ? login : signup}>
+            {state}
+          </button>
         </form>
         <div className="login-signup-switch">
           <p>
