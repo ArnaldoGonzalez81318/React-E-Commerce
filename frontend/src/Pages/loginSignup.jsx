@@ -25,6 +25,7 @@ const LoginSignup = () => {
             <input
               type="text"
               placeholder="Full Name"
+              autoComplete="name"
             />
           )}
           <input
@@ -49,6 +50,7 @@ const LoginSignup = () => {
             <input
               type="password"
               placeholder="Confirm Password"
+              autoComplete="new-password"
             />
           )}
           <button type="submit" onClick={state === 'Login' ? login : signup}>
