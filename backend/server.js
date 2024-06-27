@@ -270,13 +270,28 @@ app.post('/login', async (req, res) => {
 });
 
 // Endpoint for new collections
-app.get('/collections', async (req, res) => {
-  let products = await Product.find();
-  let collections = products.slice(1).slice(-8);
+app.get('/new-collections', async (req, res) => {
+  let products = await Product.find(); // Get all products from the database
+  let newCollections = products.slice(1).slice(-8); // Get the last 8 products from the database
+
+  console.log('New collections:', newCollections);
 
   res.json({
     success: 1,
-    collections: collections
+    newCollections: newCollections
+  });
+});
+
+// Endpoint for "Trending Women's Collection" products
+app.get('/trending-women', async (req, res) => {
+  let products = await Product.find({ category: "women" }); // Get all products from the database with the category "
+  let trendingWomen = products.slice(0, 4); // Get the first 4 products from the database
+
+  console.log('Trending in Women\'s Collection:', trendingWomen);
+
+  res.json({
+    success: 1,
+    trendingWomen: trendingWomen
   });
 });
 
