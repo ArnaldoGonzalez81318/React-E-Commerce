@@ -137,8 +137,8 @@ const AddProduct = () => {
               value={productDetails.category}
             >
               <option value="Select Category" defaultValue={true}>Select Category</option>
-              <option value="womens">Womens</option>
-              <option value="mens">Mens</option>
+              <option value="women">Women</option>
+              <option value="men">Men</option>
               <option value="kids">Kids</option>
             </select>
           </div>
