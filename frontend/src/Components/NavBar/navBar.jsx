@@ -30,11 +30,11 @@ export const NavBar = () => {
         <li onClick={() => setMenu("Shop All")} className={menu === "Shop All" ? "active" : ""}>
           <Link to="/">Shop All</Link>
         </li>
-        <li onClick={() => setMenu("Mens")} className={menu === "Mens" ? "active" : ""}>
-          <Link to="mens">Mens</Link>
+        <li onClick={() => setMenu("Men")} className={menu === "Men" ? "active" : ""}>
+          <Link to="men">Men</Link>
         </li>
-        <li onClick={() => setMenu("Womens")} className={menu === "Womens" ? "active" : ""}>
-          <Link to="womens">Womens</Link>
+        <li onClick={() => setMenu("Women")} className={menu === "Women" ? "active" : ""}>
+          <Link to="women">Women</Link>
         </li>
         <li onClick={() => setMenu("Kids")} className={menu === "Kids" ? "active" : ""}>
           <Link to="kids">Kids</Link>
