@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ShopContext } from '../../Context/shopContext';
 import logo from '../Assets/logo.png';
@@ -8,10 +8,25 @@ import { Sling as Hamburger } from 'hamburger-react';
 import './navBar.css';
 
 export const NavBar = () => {
-  const [menu, setMenu] = useState("Shop All");
-  const { cartItems } = useContext(ShopContext);
-  const menuRef = useRef();
-  const location = useLocation();
+  const { cartItems } = useContext(ShopContext); // get the cart items
+  const menuRef = useRef(); // reference to the menu
+  const location = useLocation(); // get the current location
+
+  // Get the menu name based on the path
+  const getPathMenu = (path) => {
+    switch (path) {
+      case 'men':
+        return 'Men';
+      case 'women':
+        return 'Women';
+      case 'kids':
+        return 'Kids';
+      default:
+        return 'Shop All';
+    }
+  };
+
+  const [menu, setMenu] = useState(getPathMenu(location.pathname.split('/')[1]));
 
   // Toggle the dropdown menu
   const dropdownToggle = (e) => {
@@ -19,22 +34,9 @@ export const NavBar = () => {
     e.target.classList.toggle("navbar-dropdown-active"); // toggle the dropdown icon
   };
 
-  // Update menu state based on URL
-  React.useEffect(() => {
-    const path = location.pathname.split('/')[1];
-    switch (path) {
-      case 'men':
-        setMenu('Men');
-        break;
-      case 'women':
-        setMenu('Women');
-        break;
-      case 'kids':
-        setMenu('Kids');
-        break;
-      default:
-        setMenu('Shop All');
-    }
+  // Close the dropdown menu when the user clicks outside of it
+  useEffect(() => {
+    setMenu(getPathMenu(location.pathname.split('/')[1]));
   }, [location]);
 
   return (
