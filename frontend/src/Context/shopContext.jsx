@@ -33,6 +33,28 @@ const ShopContextProvider = (props) => {
       return { ...prev, [itemId]: prev[itemId] + 1 };
     });
 
+    if (localStorage.getItem('authToken')) {
+      fetch('http://localhost:4000/add-to-cart', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem('userId'),
+          productId: itemId
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Data:', data);
+        })
+        .catch(err => {
+          console.log('Error:', err);
+        });
+    }
+
     console.log('cartItems:', cartItems);
   }
 
