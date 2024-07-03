@@ -133,7 +133,9 @@
 .product-display-description {
   font-size: 1rem;
   font-weight: 500;
+  color: #616161;
   margin-bottom: 20px;
+  text-align: left;
 }
 
 .product-display-variations {
