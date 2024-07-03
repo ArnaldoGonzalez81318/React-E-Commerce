@@ -1,11 +1,18 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
-import './breadcrumbs.css'
+import './breadcrumbs.css';
 
 const Breadcrumbs = (props) => {
-  const { product } = props
-  console.log('breadcrumbs product:', product)
+  const { product } = props;
+
+  console.log('Props in breadcrumbs:', props);
+  console.log('Product in breadcrumbs:', product);
+
+  if (!product) {
+    return <div className="breadcrumbs">No product data available</div>;
+  }
 
   return (
     <div className='breadcrumbs'>
@@ -16,6 +23,14 @@ const Breadcrumbs = (props) => {
         <p>{product.name}</p>
       </div>
     </div>
-  )
+  );
 }
-export default Breadcrumbs
+
+Breadcrumbs.propTypes = {
+  product: PropTypes.shape({
+    category: PropTypes.string,
+    name: PropTypes.string,
+  }),
+};
+
+export default Breadcrumbs;
