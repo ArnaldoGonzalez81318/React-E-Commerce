@@ -295,6 +295,42 @@ app.get('/trending-women', async (req, res) => {
   });
 });
 
+// Middleware to fetch the user data from the database using the user id from the JWT token
+const fetchUser = async (req, res, next) => {
+  const token = req.header('Authorization').replace('Bearer ', '');
+  const data = jwt.verify(token, 'secret');
+
+  try {
+    const user = await User.findOne({ _id: data.id });
+    req.user = user;
+    next();
+  } catch (err) {
+    res.status(401).send({ error: 'Please authenticate.' });
+  }
+};
+
+// Endpoint for adding a product to the cart data.
+app.post('/add-to-cart', fetchUser, async (req, res) => {
+  let userData = await User.findOne({ _id: req.user.id });
+  userData.cartData[req.body.productId] += 1;
+
+  await User.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData }, (err, user) => {
+    if (err) {
+      console.log('Error:', err);
+      res.status(500).json({
+        success: 0,
+        message: err.message
+      });
+    } else {
+      console.log('User:', user);
+      res.json({
+        success: 1,
+        message: 'Product added to cart successfully'
+      });
+    }
+  });
+});
+
 // Start the server.
 app.listen(port, (err) => {
   if (err) {
