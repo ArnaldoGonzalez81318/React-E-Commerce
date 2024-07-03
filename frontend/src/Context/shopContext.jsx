@@ -24,6 +24,30 @@ const ShopContextProvider = (props) => {
       .catch(err => {
         console.log('Error:', err);
       });
+
+    if (localStorage.getItem('authToken')) {
+      fetch('http://localhost:4000/get-cart', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem('userId')
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Data:', data);
+          setCartItems(data.cart);
+        })
+        .catch(err => {
+          console.log('Error:', err);
+        });
+    } else {
+      console.log('No user logged in');
+    }
   }, []);
 
   const addToCart = (itemId, quantity = 1) => {
