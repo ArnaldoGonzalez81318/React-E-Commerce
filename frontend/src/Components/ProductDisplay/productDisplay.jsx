@@ -1,30 +1,31 @@
-import React, { useContext, useState } from 'react'
-import star_icon from '../Assets/star_icon.png'
-import star_dull_icon from '../Assets/star_dull_icon.png'
-import { ShopContext } from '../../Context/shopContext'
-
-import './productDisplay.css'
+import React, { useContext, useState } from 'react';
+import star_icon from '../Assets/star_icon.png';
+import star_dull_icon from '../Assets/star_dull_icon.png';
+import { ShopContext } from '../../Context/shopContext';
+import './productDisplay.css';
 
 const ProductDisplay = (props) => {
-  const { product } = props
-  const { addToCart } = useContext(ShopContext)
-  const [quantity, setQuantity] = useState(1)
+  const { product } = props;
+  const { addToCart } = useContext(ShopContext);
+  const [quantity, setQuantity] = useState(1);
+
+  const increaseQuantity = () => setQuantity(prev => Math.min(prev + 1, 10));
+  const decreaseQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
   return (
     <div className='product-display'>
       <div className='product-display-container'>
         <div className='product-display-images-list'>
-          <img src={product.image} alt={product.name} />
-          <img src={product.image} alt={product.name} />
-          <img src={product.image} alt={product.name} />
-          <img src={product.image} alt={product.name} />
+          {product?.images?.map((img, idx) => (
+            <img key={idx} className='product-display-image-thumbnail' src={img} alt={`Thumbnail ${idx + 1}`} />
+          ))}
         </div>
         <div className='product-display-image'>
-          <img className='product-display-image-main' src={product.image} alt={product.title} />
+          <img className='product-display-image-main' src={product?.image} alt={product?.name} />
         </div>
       </div>
       <div className='product-display-info'>
-        <h2 className='product-display-title'>{product.name}</h2>
+        <h2 className='product-display-title'>{product?.name}</h2>
         <div className='product-display-review'>
           <div className='product-display-rating'>
             <img src={star_icon} alt='star' />
@@ -37,13 +38,13 @@ const ProductDisplay = (props) => {
         </div>
         <p className='product-display-price-old'>
           <span className='product-display-price-old-label'>Was: </span>
-          <span className='product-display-price-old-value'>${product.old_price}</span>
+          <span className='product-display-price-old-value'>${product?.old_price}</span>
         </p>
         <p className='product-display-price-new'>
           <span className='product-display-price-new-label'>Now: </span>
-          <span className='product-display-price-new-value'>${product.new_price}</span>
+          <span className='product-display-price-new-value'>${product?.new_price}</span>
         </p>
-        <p className='product-display-description'>{product.description}</p>
+        <p className='product-display-description'>{product?.description}</p>
         <div className='product-display-variations'>
           <div className='product-display-colors'>
             <h3>Color</h3>
@@ -65,7 +66,6 @@ const ProductDisplay = (props) => {
               </div>
             </div>
           </div>
-
           <div className='product-display-sizes'>
             <h3>Size</h3>
             <div className='product-display-sizes-list'>
@@ -82,21 +82,25 @@ const ProductDisplay = (props) => {
         <div className='product-display-quantity'>
           <h3>Quantity</h3>
           <div className='product-display-quantity-selector'>
-            <button>-</button>
-            <input type='text' value={quantity} onChange={(e) => setQuantity(e.target.value)} />
-            <button>+</button>
+            <button onClick={decreaseQuantity}>-</button>
+            <input
+              type='text'
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value) || 1)}
+            />
+            <button onClick={increaseQuantity}>+</button>
           </div>
         </div>
         <button
           className='product-display-add-to-cart-btn'
-          onClick={() => addToCart(product.id)}
+          onClick={() => addToCart(product?.id, quantity)}
         >
           Add to Cart
         </button>
         <button className='product-display-buy-now-btn'>Buy Now</button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductDisplay
+export default ProductDisplay;
