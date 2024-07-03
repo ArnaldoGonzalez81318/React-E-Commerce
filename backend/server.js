@@ -331,6 +331,32 @@ app.post('/add-to-cart', fetchUser, async (req, res) => {
   });
 });
 
+// Endpoint for removing a product from the cart data.
+app.post('/remove-from-cart', fetchUser, async (req, res) => {
+  let userData = await User.findOne({ _id: req.user.id });
+  if (userData.cartData[req.body.productId] > 0) {
+    userData.cartData[req.body.productId] -= 1;
+  } else {
+    userData.cartData[req.body.productId] = 0;
+  }
+
+  await User.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData }, (err, user) => {
+    if (err) {
+      console.log('Error:', err);
+      res.status(500).json({
+        success: 0,
+        message: err.message
+      });
+    } else {
+      console.log('User:', user);
+      res.json({
+        success: 1,
+        message: 'Product removed from cart successfully'
+      });
+    }
+  });
+});
+
 // Start the server.
 app.listen(port, (err) => {
   if (err) {
