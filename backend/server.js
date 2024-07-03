@@ -357,6 +357,16 @@ app.post('/remove-from-cart', fetchUser, async (req, res) => {
   });
 });
 
+// Endpoint to get the cart data for the user.
+app.get('/cart-data', fetchUser, async (req, res) => {
+  let userData = await User.findOne({ _id: req.user.id });
+  console.log('Cart data:', userData.cartData);
+  res.json({
+    success: 1,
+    cartData: userData.cartData
+  });
+});
+
 // Start the server.
 app.listen(port, (err) => {
   if (err) {
