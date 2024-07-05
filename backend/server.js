@@ -183,7 +183,12 @@ app.post('/signup', async (req, res) => {
     }
 
     // Initialize cart data
-    const cart = Array.from({ length: 300 }, () => 0);
+    const cart = {};
+    let products = await Product.find();
+
+    products.forEach((product) => {
+      cart[product.id] = 0;
+    });
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -358,7 +363,7 @@ app.post('/remove-from-cart', fetchUser, async (req, res) => {
 });
 
 // Endpoint to get the cart data for the user.
-app.get('/cart-data', fetchUser, async (req, res) => {
+app.get('/cart', fetchUser, async (req, res) => {
   let userData = await User.findOne({ _id: req.user.id });
   console.log('Cart data:', userData.cartData);
   res.json({
