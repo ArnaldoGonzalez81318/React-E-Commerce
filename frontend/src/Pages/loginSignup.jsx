@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IoEye, IoEyeOff } from "react-icons/io5";
 import './CSS/loginSignup.css';
 
 const LoginSignup = () => {
@@ -9,13 +10,18 @@ const LoginSignup = () => {
     password: '',
     confirmPassword: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
-  }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const login = async (e) => {
     e.preventDefault();
@@ -46,7 +52,7 @@ const LoginSignup = () => {
     } else {
       alert('Failed to login', responseData.error);
     }
-  }
+  };
 
   const signup = async (e) => {
     e.preventDefault();
@@ -87,7 +93,7 @@ const LoginSignup = () => {
     } else {
       alert('Failed to signup: ' + responseData.error);
     }
-  }
+  };
 
   return (
     <div className='login-signup'>
@@ -114,34 +120,33 @@ const LoginSignup = () => {
             value={formData.email || ''}
             onChange={handleChange}
           />
-          {state === 'Login' ? (
+          <div className="password-container">
             <input
-              type="password"
-              name='password'
+              type={showPassword ? 'text' : 'password'}
+              name="password"
               placeholder="Password"
-              autoComplete="current-password"
+              autoComplete={state === 'Login' ? 'current-password' : 'new-password'}
               value={formData.password || ''}
               onChange={handleChange}
             />
-          ) : (
-            <input
-              type="password"
-              name='password'
-              placeholder="Password"
-              autoComplete="new-password"
-              value={formData.password || ''}
-              onChange={handleChange}
-            />
-          )}
+            <span onClick={togglePasswordVisibility}>
+              {showPassword ? <IoEyeOff /> : <IoEye />}
+            </span>
+          </div>
           {state === 'Login' ? null : (
-            <input
-              type="password"
-              name='confirmPassword'
-              placeholder="Confirm Password"
-              autoComplete="new-password"
-              value={formData.confirmPassword || ''}
-              onChange={handleChange}
-            />
+            <div className="password-container">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                autoComplete="new-password"
+                value={formData.confirmPassword || ''}
+                onChange={handleChange}
+              />
+              <span onClick={togglePasswordVisibility}>
+                {showPassword ? <IoEyeOff /> : <IoEye />}
+              </span>
+            </div>
           )}
           <button type="submit" onClick={state === 'Login' ? login : signup}>
             {state}
