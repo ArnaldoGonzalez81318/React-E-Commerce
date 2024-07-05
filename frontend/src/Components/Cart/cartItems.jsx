@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { ShopContext } from '../../Context/shopContext';
 import remove_icon from '../Assets/cart_cross_icon.png';
-
-import './cartItems.css'
+import './cartItems.css';
 
 const CartItems = () => {
   const {
@@ -78,7 +77,7 @@ const CartItems = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CartItems
+export default CartItems;
