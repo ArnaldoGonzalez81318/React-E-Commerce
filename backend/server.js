@@ -16,6 +16,10 @@ app.use(cors());
 mongoose.connect('mongodb+srv://arnaldolgonzalez96:jNfxhOUIu6tR0815@cluster0.ltsktky.mongodb.net/e-commerce', {
   useNewUrlParser: true,
   useUnifiedTopology: true
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((err) => {
+  console.error('Error connecting to MongoDB:', err.message);
 });
 
 // API routes.
@@ -239,38 +243,55 @@ app.post('/login', async (req, res) => {
         success: false,
         error: 'Invalid email or password.'
       });
-    } else {
-      // Check if the password is correct using bcrypt,
-      // compare the password from the request with the hashed password in the database
-      const passwordMatch = await bcrypt.compare(password, user.password);
+    }
 
-      if (!passwordMatch) {
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid email or password.'
-        });
-      }
+    // Check if the password is correct
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
-      // Create JWT token
-      const token = jwt.sign({ id: user._id, email: user.email }, 'secret', { expiresIn: '1h' });
-
-      res.json({
-        success: true,
-        data: {
-          user: {
-            id: user._id,
-            email: user.email
-          }
-        },
-        token
+    if (!passwordMatch) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid email or password.'
       });
     }
+
+    // Create JWT token
+    const token = jwt.sign({ id: user._id, email: user.email }, 'secret', { expiresIn: '1h' });
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          email: user.email
+        }
+      },
+      token
+    });
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Error during login:', err);
     res.status(500).json({
       success: false,
       error: 'Server error. Please try again later.'
     });
+  }
+});
+
+// Global error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({
+    success: false,
+    error: 'Internal server error. Please try again later.'
+  });
+});
+
+// Example usage in routes
+app.post('/login', async (req, res, next) => {
+  try {
+    // Your login logic
+  } catch (err) {
+    next(err); // Pass the error to the global error handler
   }
 });
 
