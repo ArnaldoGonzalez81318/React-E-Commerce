@@ -135,6 +135,13 @@
   cursor: pointer;
 }
 
+.error-message {
+  width: 100%;
+  color: #ff4141;
+  font-size: 1rem;
+  text-align: center;
+}
+
 .login-signup-agreement {
   width: 100%;
   margin-top: 20px;
