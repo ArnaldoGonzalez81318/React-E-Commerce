@@ -45,6 +45,7 @@
 }
 
 .cart-item-wrapper {
+  width: calc(100% - 40px);
   background-color: #ffffff;
   border-radius: 15px;
   margin: 10px 20px;
