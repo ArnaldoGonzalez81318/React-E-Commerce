@@ -11,6 +11,7 @@ const LoginSignup = () => {
     confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -50,7 +51,7 @@ const LoginSignup = () => {
       localStorage.setItem('authToken', responseData.token);
       window.location.replace('/');
     } else {
-      alert('Failed to login', responseData.error);
+      setErrorMessage(responseData.error);
     }
   };
 
@@ -152,12 +153,16 @@ const LoginSignup = () => {
             {state}
           </button>
         </form>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="login-signup-switch">
           <p>
             {state === 'Login'
               ? "Don't have an account?"
               : 'Already have an account?'}
-            <span onClick={() => setState(state === 'Login' ? 'Signup' : 'Login')}>
+            <span onClick={() => {
+              setErrorMessage('');
+              setState(state === 'Login' ? 'Signup' : 'Login');
+            }}>
               {state === 'Login' ? 'Signup' : 'Login'}
             </span>
           </p>
