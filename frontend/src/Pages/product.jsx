@@ -9,10 +9,15 @@ import RelatedProducts from '../Components/RelatedProducts/relatedProducts';
 import './CSS/product.css';
 
 const Product = () => {
-  const { all_products } = useContext(ShopContext);
+  const { allProducts } = useContext(ShopContext);
   const { id } = useParams();
-  const product = all_products.find((e) => e.id === Number(id));
-  // const product = all_products.find((product) => product.id === Number(id));
+
+  // Ensure allProducts is defined and has elements before calling find
+  const product = allProducts?.find((e) => e.id === Number(id));
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className='product'>
@@ -21,7 +26,7 @@ const Product = () => {
       <DescriptionBox />
       <RelatedProducts />
     </div>
-  )
-}
+  );
+};
 
-export default Product
+export default Product;
