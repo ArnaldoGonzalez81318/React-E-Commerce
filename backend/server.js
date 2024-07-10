@@ -289,15 +289,29 @@ app.get('/trending-women', async (req, res) => {
 
 // Middleware to fetch the user data from the database using the user id from the JWT token
 const fetchUser = async (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-  const data = jwt.verify(token, 'secret');
+  const authHeader = req.header('Authorization');
+  if (!authHeader) {
+    return res.status(401).send({ error: 'Authorization header missing' });
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+  let data;
+
+  try {
+    data = jwt.verify(token, 'secret');
+  } catch (err) {
+    return res.status(401).send({ error: 'Invalid token' });
+  }
 
   try {
     const user = await User.findOne({ _id: data.id });
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
     req.user = user;
     next();
   } catch (err) {
-    res.status(401).send({ error: 'Please authenticate.' });
+    res.status(500).send({ error: 'Server error' });
   }
 };
 
