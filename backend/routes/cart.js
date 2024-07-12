@@ -72,6 +72,26 @@ router.post('/remove-from-cart', fetchUser, async (req, res) => {
   }
 });
 
+// Endpoint to remove a product completely from the cart
+router.post('/remove-product-from-cart', fetchUser, async (req, res) => {
+  try {
+    const userData = await User.findOne({ _id: req.user.id });
+    userData.cartData[req.body.productId] = 0;
+
+    await User.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData });
+    res.json({
+      success: 1,
+      message: 'Product removed completely from cart',
+    });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({
+      success: 0,
+      message: 'Error removing product completely from cart',
+    });
+  }
+});
+
 // Endpoint to get the cart data for the user
 router.get('/cart', fetchUser, async (req, res) => {
   try {
