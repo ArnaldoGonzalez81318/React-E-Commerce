@@ -21,8 +21,12 @@ const ShopContextProvider = (props) => {
       try {
         const response = await fetch('http://localhost:4000/products');
         const data = await response.json();
-        setAllProducts(data.products);
-        setCartItems(getDefaultCart(data.products));
+        if (data && data.products) {
+          setAllProducts(data.products);
+          setCartItems(getDefaultCart(data.products));
+        } else {
+          console.error('Error: products not found in the response');
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
       }
