@@ -7,7 +7,7 @@ import './CSS/shopCategory.css'
 
 const ShopCategory = (props) => {
   const { allProducts } = useContext(ShopContext);
-  console.log('allProducts:', allProducts)
+  console.log('allProducts:', allProducts);
 
   // Ensure allProducts is defined and has elements before trying to filter or map
   const filteredProducts = allProducts?.filter((product) => product.category === props.category) || [];
