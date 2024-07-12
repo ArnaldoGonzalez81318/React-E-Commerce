@@ -41,7 +41,7 @@ const ShopContextProvider = (props) => {
       if (authToken) {
         try {
           const response = await fetch('http://localhost:4000/cart', {
-            method: 'GET', // Use GET method
+            method: 'GET',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ const ShopContextProvider = (props) => {
   const removeFromCart = async (itemId) => {
     const updatedCartItems = {
       ...cartItems,
-      [itemId]: cartItems[itemId] - 1,
+      [itemId]: Math.max((cartItems[itemId] || 1) - 1, 0),
     };
     setCartItems(updatedCartItems);
 
@@ -130,6 +130,44 @@ const ShopContextProvider = (props) => {
         }
       } catch (error) {
         console.error('Error removing from cart:', error);
+      }
+    } else {
+      console.log('No user logged in');
+    }
+
+    console.log('Updated cartItems:', updatedCartItems);
+  };
+
+  // Remove product completely from the cart
+  const removeProductFromCart = async (itemId) => {
+    const updatedCartItems = {
+      ...cartItems,
+      [itemId]: 0,
+    };
+    setCartItems(updatedCartItems);
+
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+      try {
+        const response = await fetch('http://localhost:4000/remove-product-from-cart', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            userId: localStorage.getItem('userId'),
+            productId: itemId,
+          }),
+        });
+        const data = await response.json();
+        console.log('Remove product from cart response:', data);
+        if (data.error) {
+          console.error('Error removing product from cart:', data.error);
+        }
+      } catch (error) {
+        console.error('Error removing product from cart:', error);
       }
     } else {
       console.log('No user logged in');
@@ -164,6 +202,7 @@ const ShopContextProvider = (props) => {
     cartItems,
     addToCart,
     removeFromCart,
+    removeProductFromCart,
     clearCart,
     getTotalCartAmount,
     getTotalCartItems,
