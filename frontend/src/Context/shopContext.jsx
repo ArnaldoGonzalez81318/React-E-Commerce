@@ -37,21 +37,22 @@ const ShopContextProvider = (props) => {
   // Fetch cart items if the user is authenticated
   useEffect(() => {
     const fetchCart = async () => {
-      if (localStorage.getItem('authToken')) {
+      const authToken = localStorage.getItem('authToken');
+      if (authToken) {
         try {
           const response = await fetch('http://localhost:4000/cart', {
-            method: 'POST',
+            method: 'GET', // Use GET method
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+              Authorization: `Bearer ${authToken}`,
             },
-            body: JSON.stringify({
-              userId: localStorage.getItem('userId'),
-            }),
           });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
           const data = await response.json();
-          setCartItems(data.cart);
+          setCartItems(data.cartData);
         } catch (error) {
           console.error('Error fetching cart data:', error);
         }
@@ -70,14 +71,15 @@ const ShopContextProvider = (props) => {
     };
     setCartItems(updatedCartItems);
 
-    if (localStorage.getItem('authToken')) {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
       try {
         const response = await fetch('http://localhost:4000/add-to-cart', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
             userId: localStorage.getItem('userId'),
@@ -106,14 +108,15 @@ const ShopContextProvider = (props) => {
     };
     setCartItems(updatedCartItems);
 
-    if (localStorage.getItem('authToken')) {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
       try {
         const response = await fetch('http://localhost:4000/remove-from-cart', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
             userId: localStorage.getItem('userId'),
