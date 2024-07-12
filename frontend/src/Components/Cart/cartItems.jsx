@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { ShopContext } from '../../Context/shopContext';
-import remove_icon from '../Assets/cart_cross_icon.png';
+import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import './cartItems.css';
 
 const CartItems = () => {
@@ -9,6 +9,7 @@ const CartItems = () => {
     cartItems,
     addToCart,
     removeFromCart,
+    removeProductFromCart,
     getTotalCartAmount
   } = useContext(ShopContext);
 
@@ -40,8 +41,8 @@ const CartItems = () => {
                       </div>
                       <p>${product.new_price}</p>
                       <p>${(cartItems[product.id] * product.new_price).toFixed(2)}</p>
-                      <div className='remove-item' onClick={() => removeFromCart(product.id)}>
-                        <img src={remove_icon} className='remove-icon' alt='remove' />
+                      <div className='remove-item' onClick={() => removeProductFromCart(product.id)}>
+                        <MdOutlineRemoveShoppingCart className='remove-icon' />
                       </div>
                     </div>
                   </div>
