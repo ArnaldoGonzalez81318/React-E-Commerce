@@ -70,6 +70,6 @@ app.listen(port, (err) => {
   if (err) {
     console.log('Error: ', err);
   } else {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port} at http://localhost:${port}`);
   }
 });
