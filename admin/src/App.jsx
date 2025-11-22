@@ -7,7 +7,7 @@ import EditProduct from './Components/EditProduct/EditProduct'
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 bg-[radial-gradient(circle_at_top,_rgba(81,108,255,0.12),transparent_60%)]">
       <Navbar />
       <Routes>
         <Route path="/" element={<AdminLayout />}>
