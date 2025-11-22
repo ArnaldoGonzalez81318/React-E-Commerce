@@ -1,105 +1,147 @@
-import React, { useContext, useState } from 'react';
-import star_icon from '../Assets/star_icon.png';
-import star_dull_icon from '../Assets/star_dull_icon.png';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { ShopContext } from '../../Context/shopContext';
 import './productDisplay.css';
 
-const ProductDisplay = (props) => {
-  const { product } = props;
+const priceFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
+const defaultColors = ['#0f172a', '#f97316', '#6366f1', '#10b981'];
+const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+
+const ProductDisplay = ({ product }) => {
   const { addToCart } = useContext(ShopContext);
+  const gallery = useMemo(() => {
+    const sources = [...(product?.images || []), product?.image].filter(Boolean);
+    const unique = Array.from(new Set(sources));
+    return unique.slice(0, 4);
+  }, [product]);
+
+  const [activeImage, setActiveImage] = useState(gallery[0]);
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState(defaultColors[0]);
+  const [selectedSize, setSelectedSize] = useState('M');
+
+  useEffect(() => {
+    setActiveImage(gallery[0]);
+  }, [gallery]);
 
   const increaseQuantity = () => setQuantity(prev => Math.min(prev + 1, 10));
   const decreaseQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
+  const handleAddToCart = () => {
+    if (!product?.id) return;
+    addToCart(product.id, quantity);
+  };
+
+  const priceOld = product?.old_price ? priceFormatter.format(product.old_price) : null;
+  const priceNew = product?.new_price ? priceFormatter.format(product.new_price) : null;
+
   return (
-    <div className='product-display'>
-      <div className='product-display-container'>
-        <div className='product-display-images-list'>
-          {product?.images?.map((img, idx) => (
-            <img key={idx} className='product-display-image-thumbnail' src={img} alt={`Thumbnail ${idx + 1}`} />
-          ))}
+    <section className='product-display'>
+      <div className='product-gallery'>
+        <div className='product-thumbs'>
+          {gallery.length > 0 ? (
+            gallery.map((img, idx) => (
+              <button
+                key={img || idx}
+                type='button'
+                className={`thumb ${activeImage === img ? 'active' : ''}`}
+                onClick={() => setActiveImage(img)}
+                aria-label={`View image ${idx + 1}`}
+              >
+                <img src={img} alt={`${product?.name} ${idx + 1}`} />
+              </button>
+            ))
+          ) : (
+            <div className='thumb thumb-placeholder'>
+              Coming soon
+            </div>
+          )}
         </div>
-        <div className='product-display-image'>
-          <img className='product-display-image-main' src={product?.image} alt={product?.name} />
+        <div className='product-hero'>
+          {activeImage ? (
+            <img src={activeImage} alt={product?.name} />
+          ) : (
+            <p className='hero-placeholder'>Visual coming soon</p>
+          )}
         </div>
       </div>
-      <div className='product-display-info'>
-        <h2 className='product-display-title'>{product?.name}</h2>
-        <div className='product-display-review'>
-          <div className='product-display-rating'>
-            <img src={star_icon} alt='star' />
-            <img src={star_icon} alt='star' />
-            <img src={star_icon} alt='star' />
-            <img src={star_icon} alt='star' />
-            <img src={star_dull_icon} alt='star' />
+
+      <div className='product-info card'>
+        <div className='product-header'>
+          <p className='pill'>Featured</p>
+          <h1>{product?.name}</h1>
+          <p className='product-subtitle'>Engineered for everyday movement with breathable knits and sculpted tailoring.</p>
+          <div className='product-price-row'>
+            {priceNew && <span className='product-price-new'>{priceNew}</span>}
+            {priceOld && <span className='product-price-old'>{priceOld}</span>}
+            <span className='product-stock'>{product?.available ? 'In stock' : 'Ships soon'}</span>
           </div>
-          <p className='product-display-review-count'>(1,245) reviews</p>
         </div>
-        <p className='product-display-price-old'>
-          <span className='product-display-price-old-label'>Was: </span>
-          <span className='product-display-price-old-value'>${product?.old_price}</span>
-        </p>
-        <p className='product-display-price-new'>
-          <span className='product-display-price-new-label'>Now: </span>
-          <span className='product-display-price-new-value'>${product?.new_price}</span>
-        </p>
-        <p className='product-display-description'>{product?.description}</p>
-        <div className='product-display-variations'>
-          <div className='product-display-colors'>
-            <h3>Color</h3>
-            <div className='product-display-colors-list'>
-              <div className='product-display-color'>
-                <div className='product-display-color-dot' style={{ backgroundColor: 'red' }}></div>
-              </div>
-              <div className='product-display-color'>
-                <div className='product-display-color-dot' style={{ backgroundColor: 'blue' }}></div>
-              </div>
-              <div className='product-display-color'>
-                <div className='product-display-color-dot' style={{ backgroundColor: 'green' }}></div>
-              </div>
-              <div className='product-display-color'>
-                <div className='product-display-color-dot' style={{ backgroundColor: 'yellow' }}></div>
-              </div>
-              <div className='product-display-color'>
-                <div className='product-display-color-dot' style={{ backgroundColor: 'black' }}></div>
-              </div>
+
+        <div className='product-options'>
+          <div>
+            <p className='label'>Color</p>
+            <div className='swatches'>
+              {(product?.swatches || defaultColors).map(color => (
+                <button
+                  key={color}
+                  type='button'
+                  className={`swatch ${selectedColor === color ? 'active' : ''}`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => setSelectedColor(color)}
+                  aria-label={`Select color ${color}`}
+                />
+              ))}
             </div>
           </div>
-          <div className='product-display-sizes'>
-            <h3>Size</h3>
-            <div className='product-display-sizes-list'>
-              <div className='product-display-size'>XS</div>
-              <div className='product-display-size'>S</div>
-              <div className='product-display-size'>M</div>
-              <div className='product-display-size'>L</div>
-              <div className='product-display-size'>XL</div>
-              <div className='product-display-size'>2XL</div>
-              <div className='product-display-size'>3XL</div>
+
+          <div>
+            <p className='label'>Size</p>
+            <div className='sizes'>
+              {(product?.sizes || availableSizes).map(size => (
+                <button
+                  key={size}
+                  type='button'
+                  className={`size-chip ${selectedSize === size ? 'active' : ''}`}
+                  onClick={() => setSelectedSize(size)}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className='label'>Quantity</p>
+            <div className='quantity-control' role='group' aria-label='Select quantity'>
+              <button type='button' onClick={decreaseQuantity} aria-label='Decrease quantity'>
+                −
+              </button>
+              <input type='text' value={quantity} onChange={event => setQuantity(Math.max(1, Number(event.target.value) || 1))} />
+              <button type='button' onClick={increaseQuantity} aria-label='Increase quantity'>
+                +
+              </button>
             </div>
           </div>
         </div>
-        <div className='product-display-quantity'>
-          <h3>Quantity</h3>
-          <div className='product-display-quantity-selector'>
-            <button onClick={decreaseQuantity}>-</button>
-            <input
-              type='text'
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value) || 1)}
-            />
-            <button onClick={increaseQuantity}>+</button>
-          </div>
+
+        <div className='product-actions'>
+          <button className='btn-primary' onClick={handleAddToCart} disabled={!product?.id}>
+            Add to cart
+          </button>
+          <button className='btn-secondary'>Buy now</button>
         </div>
-        <button
-          className='product-display-add-to-cart-btn'
-          onClick={() => addToCart(product?.id, quantity)}
-        >
-          Add to Cart
-        </button>
-        <button className='product-display-buy-now-btn'>Buy Now</button>
+
+        <ul className='product-meta'>
+          <li>Free express shipping over $150</li>
+          <li>Free 30-day returns</li>
+          <li>Carbon-neutral packaging</li>
+        </ul>
       </div>
-    </div>
+    </section>
   );
 };
 
