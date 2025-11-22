@@ -1,7 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { MdOutlineRemoveShoppingCart } from 'react-icons/md';
 import { ShopContext } from '../../Context/shopContext';
-import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import './cartItems.css';
+
+const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 const CartItems = () => {
   const {
@@ -10,77 +13,111 @@ const CartItems = () => {
     addToCart,
     removeFromCart,
     removeProductFromCart,
-    getTotalCartAmount
+    getTotalCartAmount,
   } = useContext(ShopContext);
 
+  const [promoCode, setPromoCode] = useState('');
+  const [promoMessage, setPromoMessage] = useState('');
+
+  const cartProducts = useMemo(() => {
+    if (!allProducts?.length) return [];
+    return allProducts.filter(product => (cartItems[product.id] || 0) > 0);
+  }, [allProducts, cartItems]);
+
+  const handlePromoSubmit = event => {
+    event.preventDefault();
+    if (!promoCode.trim()) {
+      setPromoMessage('Enter a promo code to apply savings.');
+      return;
+    }
+    setPromoMessage('Promo applied! Savings will appear at checkout.');
+    setPromoCode('');
+  };
+
+  const subtotal = Number(getTotalCartAmount());
+
   return (
-    <div className="cart-items">
-      <div className="cart-items-header">
-        <h2>Shopping Cart</h2>
-        <div className='cart-items-header-wrapper'>
-          <h3>Product</h3>
-          <h3>Title</h3>
-          <h3>Quantity</h3>
-          <h3>Price</h3>
-          <h3>Total</h3>
-          <h3>Remove</h3>
-        </div>
-        <div className='cart-items-list'>
-          {allProducts && allProducts.length > 0 ? (
-            allProducts.map((product) => {
-              if (cartItems[product.id] > 0) {
-                return (
-                  <div className='cart-item-wrapper' key={product.id}>
-                    <div className='cart-item'>
-                      <img src={product.image} alt={product.name} className='cart-item-image' />
-                      <p className='cart-item-title'>{product.name}</p>
-                      <div className='quantity'>
-                        <button onClick={() => removeFromCart(product.id)}>-</button>
-                        <p>{cartItems[product.id]}</p>
-                        <button onClick={() => addToCart(product.id)}>+</button>
-                      </div>
-                      <p>${product.new_price}</p>
-                      <p>${(cartItems[product.id] * product.new_price).toFixed(2)}</p>
-                      <div className='remove-item' onClick={() => removeProductFromCart(product.id)}>
-                        <MdOutlineRemoveShoppingCart className='remove-icon' />
-                      </div>
-                    </div>
+    <section className='cart section-shell'>
+      <div className='cart-layout'>
+        <div className='cart-list card'>
+          <div className='cart-list-head'>
+            <div>Product</div>
+            <div>Details</div>
+            <div>Qty</div>
+            <div>Price</div>
+            <div>Total</div>
+          </div>
+          {cartProducts.length ? (
+            cartProducts.map(product => {
+              const quantity = cartItems[product.id] || 0;
+              const lineTotal = quantity * (product.new_price || 0);
+              return (
+                <article key={product.id} className='cart-row'>
+                  <img src={product.image} alt={product.name} className='cart-row-media' />
+                  <div className='cart-row-info'>
+                    <h3>{product.name}</h3>
+                    <p>Ships in 2–4 days · Free returns</p>
+                    <button type='button' onClick={() => removeProductFromCart(product.id)} className='remove-link'>
+                      <MdOutlineRemoveShoppingCart aria-hidden /> Remove
+                    </button>
                   </div>
-                );
-              } else {
-                return null;
-              }
+                  <div className='cart-row-qty'>
+                    <button type='button' onClick={() => removeFromCart(product.id)} aria-label='Decrease quantity'>−</button>
+                    <span>{quantity}</span>
+                    <button type='button' onClick={() => addToCart(product.id)} aria-label='Increase quantity'>+</button>
+                  </div>
+                  <div className='cart-row-price'>{currency.format(product.new_price || 0)}</div>
+                  <div className='cart-row-total'>{currency.format(lineTotal)}</div>
+                </article>
+              );
             })
           ) : (
-            <p>No items in cart</p>
+            <div className='cart-empty'>
+              <p>Your bag is empty.</p>
+              <Link to='/' className='btn-primary'>
+                Shop new arrivals
+              </Link>
+            </div>
           )}
         </div>
-      </div>
 
-      <div className='cart-items-total'>
-        <div className='cart-items-total-wrapper'>
-          <div className='cart-items-total-subtotal'>
-            <h3>Subtotal</h3>
-            <p>${getTotalCartAmount()}</p>
+        <aside className='cart-summary card'>
+          <h2>Order Summary</h2>
+          <div className='summary-row'>
+            <span>Subtotal</span>
+            <span>{currency.format(subtotal)}</span>
           </div>
-          <div className='cart-items-total-shipping'>
-            <h3>Shipping</h3>
-            <p>Free</p>
+          <div className='summary-row'>
+            <span>Shipping</span>
+            <span>Free</span>
           </div>
-          <div className='cart-items-total-total'>
-            <h3>Total</h3>
-            <p>${getTotalCartAmount()}</p>
+          <div className='summary-row total'>
+            <span>Total</span>
+            <span>{currency.format(subtotal)}</span>
           </div>
-        </div>
-        <div className='cart-items-promo'>
-          <input type='text' placeholder='Promo Code' />
-          <button>Apply</button>
-        </div>
-        <div className='checkout-button'>
-          <button>Checkout</button>
-        </div>
+
+          <form className='promo-form' onSubmit={handlePromoSubmit}>
+            <label htmlFor='promo' className='sr-only'>Promo code</label>
+            <input
+              id='promo'
+              type='text'
+              placeholder='Have a promo code?'
+              value={promoCode}
+              onChange={event => setPromoCode(event.target.value)}
+            />
+            <button type='submit' className='btn-secondary'>Apply</button>
+          </form>
+          {promoMessage && <p className='promo-message'>{promoMessage}</p>}
+
+          <button className='btn-primary checkout-btn' disabled={!cartProducts.length}>
+            Proceed to checkout
+          </button>
+          <Link to='/' className='btn-secondary continue-btn'>
+            Continue shopping
+          </Link>
+        </aside>
       </div>
-    </div>
+    </section>
   );
 };
 
