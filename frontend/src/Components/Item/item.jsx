@@ -3,24 +3,73 @@ import { Link } from 'react-router-dom'
 
 import './item.css'
 
-const Item = (props) => {
+const priceFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 2,
+})
+
+const Item = ({ id, _id, productId, image, name, old_price, new_price, badge }) => {
+  const resolvedId = productId ?? id ?? _id
+  const href = resolvedId ? `/product/${resolvedId}` : undefined
+
+  const priceOld = typeof old_price === 'number' ? priceFormatter.format(old_price) : old_price
+  const priceNew = typeof new_price === 'number' ? priceFormatter.format(new_price) : new_price
+
+  const imageElement = (
+    <div className="item-media" aria-hidden={!href}>
+      <img src={image} alt={name} loading="lazy" />
+      {badge && <span className="item-badge">{badge}</span>}
+    </div>
+  )
+
+  const title = (
+    <h3 className="item-title" title={name}>
+      {name}
+    </h3>
+  )
+
+  const handleScrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
   return (
-    <div className="item">
-      <div className="item-image">
-        <Link to={`/product/${props.id}`}>
-          <img src={props.image} alt={props.name} onClick={() => window.scrollTo(0, 0)} />
+    <article className="item card" aria-label={name}>
+      {href ? (
+        <Link to={href} onClick={handleScrollTop} className="item-link">
+          {imageElement}
         </Link>
-      </div>
-      <div className="item-details">
-        <Link to={`/product/${props.id}`} onClick={() => window.scrollTo(0, 0)}>
-          <h3>{props.name}</h3>
-        </Link>
+      ) : (
+        imageElement
+      )}
+
+      <div className="item-content">
+        {href ? (
+          <Link to={href} onClick={handleScrollTop} className="item-link">
+            {title}
+          </Link>
+        ) : (
+          title
+        )}
+
+        <p className="item-subtitle">Limited release · Ships in 48h</p>
+
         <div className="item-price">
-          <p className="item-price-old">${props.old_price}</p>
-          <p className="item-price-new">${props.new_price}</p>
+          {priceOld && <span className="price-old">{priceOld}</span>}
+          {priceNew && <span className="price-new">{priceNew}</span>}
         </div>
       </div>
-    </div>
+
+      <div className="item-actions">
+        {href ? (
+          <Link to={href} onClick={handleScrollTop} className="btn-secondary item-cta">
+            View product
+          </Link>
+        ) : (
+          <button type="button" className="btn-secondary item-cta" disabled>
+            Coming soon
+          </button>
+        )}
+      </div>
+    </article>
   )
 }
 
