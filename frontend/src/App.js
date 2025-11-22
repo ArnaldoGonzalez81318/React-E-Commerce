@@ -15,20 +15,25 @@ import kids_banner from './Components/Assets/banner_kids.png';
 
 function App() {
   return (
-    <div className="App">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900">
+      <a className="skip-nav" href="#main">
+        Skip to content
+      </a>
       <BrowserRouter>
         <NavBar />
-        <Routes>
-          <Route path="/" element={<Shop />} />
-          <Route path="/men" element={<ShopCategory category="men" banner={mens_banner} />} />
-          <Route path="/women" element={<ShopCategory category="women" banner={women_banner} />} />
-          <Route path="/kids" element={<ShopCategory category="kids" banner={kids_banner} />} />
-          <Route path="/product" element={<Product />}>
-            <Route path=":id" element={<Product />} />
-          </Route>
-          <Route path="/login" element={<LoginSignup />} />
-          <Route path="/cart" element={<Cart />} />
-        </Routes>
+        <main id="main" className="pb-16">
+          <Routes>
+            <Route path="/" element={<Shop />} />
+            <Route path="/men" element={<ShopCategory category="men" banner={mens_banner} />} />
+            <Route path="/women" element={<ShopCategory category="women" banner={women_banner} />} />
+            <Route path="/kids" element={<ShopCategory category="kids" banner={kids_banner} />} />
+            <Route path="/product" element={<Product />}>
+              <Route path=":id" element={<Product />} />
+            </Route>
+            <Route path="/login" element={<LoginSignup />} />
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
+        </main>
         <Footer />
       </BrowserRouter>
     </div>
