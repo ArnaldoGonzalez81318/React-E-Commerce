@@ -1,202 +1,349 @@
-import { useState } from 'react';
-import uploadArea from '../../assets/upload_area.svg';
-import './AddProduct.css';
+import { useEffect, useMemo, useState } from 'react'
+import uploadArea from '../../assets/upload_area.svg'
+
+const emptyProduct = {
+  name: '',
+  image: '',
+  category: '',
+  old_price: '',
+  new_price: '',
+  description: '',
+  available: true,
+}
+
+const categoryOptions = [
+  { label: 'Select category', value: '' },
+  { label: 'Women', value: 'women' },
+  { label: 'Men', value: 'men' },
+  { label: 'Kids', value: 'kids' },
+]
 
 const AddProduct = () => {
-  const [image, setImage] = useState(null);
-  const [productDetails, setProductDetails] = useState({
-    name: "",
-    image: "",
-    category: "",
-    old_price: "",
-    new_price: "",
-    description: "",
-    available: false
-  });
+  const [image, setImage] = useState(null)
+  const [productDetails, setProductDetails] = useState(emptyProduct)
+  const [status, setStatus] = useState({ type: 'idle', message: '' })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Function to handle the change event of the file input element.
-  const imageHandler = (e) => {
-    // Updating the image state object with the selected image.
-    setImage(e.target.files[0]);
-  };
+  const previewUrl = useMemo(() => (image ? URL.createObjectURL(image) : null), [image])
 
-  // Function to handle the change event of the input elements.
-  // This function will update the productDetails state object with the new value.
-  const changeHandler = (e) => {
-    // Destructuring the event target object to get the name, value, type, and checked properties.
-    const { name, value, type, checked } = e.target;
-    // Updating the productDetails state object with the new value.
-    setProductDetails({
-      // Using the spread operator to copy the existing productDetails object.
-      ...productDetails,
-      // Updating the value of the key in the productDetails object with the new value.
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+    }
+  }, [previewUrl])
 
-  // Function to handle the add product button click event.
-  // This function will send a POST request to the server to add the product.
-  const addProductHandler = async () => {
-    console.log('Product Details:', productDetails);
-    let responseData;
-    let product = productDetails;
-    let formData = new FormData();
+  const imageHandler = event => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    setImage(file)
+  }
 
-    formData.append('productImage', image);
+  const changeHandler = event => {
+    const { name, value, type, checked } = event.target
+    setProductDetails(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+  }
 
-    // Sending a POST request to the server to upload the image.
-    await fetch('http://localhost:4000/upload', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json'
-      },
-      body: formData
-    })
-      .then(res => res.json()) // Converting the response to JSON
-      .then(data => { // Accessing the response data
-        console.log('Data:', data);
-        responseData = data;
-      }).catch(err => { // Handling any error
-        console.log('Error:', err);
-      });
+  const resetForm = () => {
+    setProductDetails(emptyProduct)
+    setImage(null)
+    setStatus({ type: 'idle', message: '' })
+  }
 
-    // If the response data is available and the success property is true, then update the product image property with the image URL.
-    if (responseData && responseData.success) {
-      product.image = responseData.profile_url;
-      console.log('Product:', product);
+  const validateForm = () => {
+    const issues = []
+    if (!productDetails.name.trim()) issues.push('product name')
+    if (!productDetails.category) issues.push('category')
+    if (!productDetails.old_price) issues.push('price')
+    if (!productDetails.new_price) issues.push('offer price')
+    if (!productDetails.description.trim()) issues.push('description')
+    if (!image) issues.push('hero image')
+    return issues
+  }
 
-      await fetch('http://localhost:4000/add-product', {
+  const addProductHandler = async event => {
+    event.preventDefault()
+    const issues = validateForm()
+    if (issues.length) {
+      setStatus({ type: 'error', message: `Please provide: ${issues.join(', ')}` })
+      return
+    }
+
+    setIsSubmitting(true)
+    setStatus({ type: 'info', message: 'Uploading image...' })
+
+    try {
+      const formData = new FormData()
+      formData.append('productImage', image)
+
+      const uploadResponse = await fetch('http://localhost:4000/upload', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(product)
+        body: formData,
       })
-        .then(res => res.json())
-        .then(data => {
-          data.success ? alert('Product added successfully') : alert('Failed to add product');
-        }).catch(err => {
-          console.log('Error:', err);
-        });
-    } else {
-      alert('Failed to upload image');
+
+      const uploadData = await uploadResponse.json()
+
+      if (!uploadData?.success) {
+        throw new Error(uploadData?.message || 'Image upload failed')
+      }
+
+      const payload = {
+        ...productDetails,
+        image: uploadData.profile_url,
+      }
+
+      setStatus({ type: 'info', message: 'Saving product...' })
+
+      const productResponse = await fetch('http://localhost:4000/add-product', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const productData = await productResponse.json()
+
+      if (!productData?.success) {
+        throw new Error(productData?.message || 'Unable to save product')
+      }
+
+      setStatus({ type: 'success', message: 'Product added successfully' })
+      resetForm()
+    } catch (error) {
+      console.error('Add product error', error)
+      setStatus({ type: 'error', message: error.message || 'Unexpected error' })
+    } finally {
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <div className="add-product">
-      <div className="add-product-wrapper">
-        <h2 className="add-product-title">Add Product</h2>
-        <form className="add-product-form">
-          <div className="add-product-form-group">
-            <label htmlFor="name" className="add-product-form-label">Product Name</label>
+    <section className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">Products</p>
+          <h1 className="text-2xl font-semibold text-slate-900">Add a new product</h1>
+          <p className="text-sm text-slate-500">Complete the form below to publish a new listing to the storefront.</p>
+        </div>
+        <button
+          type="button"
+          onClick={resetForm}
+          className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+        >
+          Reset form
+        </button>
+      </div>
+
+      {status.type !== 'idle' && (
+        <div
+          className={`rounded-2xl border px-4 py-3 text-sm ${status.type === 'success'
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+            : status.type === 'error'
+              ? 'border-rose-200 bg-rose-50 text-rose-900'
+              : 'border-amber-200 bg-amber-50 text-amber-900'
+            }`}
+        >
+          {status.message}
+        </div>
+      )}
+
+      <form onSubmit={addProductHandler} className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-slate-700" htmlFor="name">
+              Product name
+            </label>
             <input
-              type="text"
               id="name"
-              className="add-product-form-input"
-              name='name'
-              placeholder="Product Name"
-              onChange={changeHandler}
+              name="name"
+              type="text"
+              placeholder="E.g. Cotton Crewneck Tee"
               value={productDetails.name}
+              onChange={changeHandler}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-inner focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
             />
           </div>
-          <div className="add-product-form-group-row">
-            <div className="add-product-form-group">
-              <label htmlFor="price" className="add-product-form-label">Price</label>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="price">
+                Price
+              </label>
               <input
-                type="text"
                 id="price"
-                className="add-product-form-input"
-                name='old_price'
-                placeholder='Price'
-                onChange={changeHandler}
+                name="old_price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
                 value={productDetails.old_price}
-              />
-            </div>
-            <div className="add-product-form-group">
-              <label htmlFor="newPrice" className="add-product-form-label">Offer Price</label>
-              <input
-                type="text"
-                id="newPrice"
-                className="add-product-form-input"
-                name='new_price'
-                placeholder='Offer Price'
                 onChange={changeHandler}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-inner focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="newPrice">
+                Offer price
+              </label>
+              <input
+                id="newPrice"
+                name="new_price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
                 value={productDetails.new_price}
+                onChange={changeHandler}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-inner focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
               />
             </div>
           </div>
-          <div className="add-product-form-group">
-            <label htmlFor="category" className="add-product-form-label">Category</label>
-            <select
-              name="category"
-              id="category"
-              className="add-product-form-select"
-              onChange={changeHandler}
-              value={productDetails.category}
-            >
-              <option value="Select Category" defaultValue={true}>Select Category</option>
-              <option value="women">Women</option>
-              <option value="men">Men</option>
-              <option value="kids">Kids</option>
-            </select>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="category">
+                Category
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={productDetails.category}
+                onChange={changeHandler}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              >
+                {categoryOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="available">
+                Availability
+              </label>
+              <label className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-inner">
+                <span className="text-slate-600">Show in storefront</span>
+                <input
+                  id="available"
+                  name="available"
+                  type="checkbox"
+                  checked={productDetails.available}
+                  onChange={changeHandler}
+                  className="h-5 w-5 accent-brand-500"
+                />
+              </label>
+            </div>
           </div>
-          <div className="add-product-form-group">
-            <label htmlFor="description" className="add-product-form-label">Description</label>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700" htmlFor="description">
+              Description
+            </label>
             <textarea
               id="description"
-              className="add-product-form-textarea"
-              name='description'
-              placeholder='Lorem ipsum dolor sit amet, consectetur adipiscing elit...'
-              onChange={changeHandler}
+              name="description"
+              rows={6}
+              placeholder="Highlight the fabric, fit, and care details..."
               value={productDetails.description}
-            ></textarea>
+              onChange={changeHandler}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-inner focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+            />
           </div>
-          <div className="add-product-form-group">
-            <label htmlFor="image" className="add-product-form-label-upload">
-              <img
-                src={image ? URL.createObjectURL(image) : uploadArea}
-                alt="Upload Area"
-                className="add-product-form-upload-thumbnail"
+
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-slate-700">Hero image</p>
+            <label
+              htmlFor="image"
+              className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-white p-6 text-center text-slate-500 transition hover:border-brand-300 hover:bg-brand-50/50"
+            >
+              {previewUrl ? (
+                <img src={previewUrl} alt="Selected product" className="h-full w-full rounded-xl object-cover" />
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <img src={uploadArea} className="h-16 w-16" alt="Upload" />
+                  <div>
+                    <p className="font-semibold text-slate-900">Drop an image or click to browse</p>
+                    <p className="text-xs text-slate-500">PNG, JPG up to 5MB</p>
+                  </div>
+                </div>
+              )}
+              <input
+                id="image"
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={imageHandler}
+                className="sr-only"
               />
             </label>
-            <input
-              type="file"
-              id="image"
-              className="add-product-form-file"
-              name='image'
-              accept="image/*"
-              hidden
-              onChange={imageHandler}
-            />
           </div>
-          <div className="add-product-form-group-checkbox">
-            <input
-              type='checkbox'
-              id='available'
-              name='available'
-              className='add-product-form-group-checkbox-input'
-              onChange={changeHandler}
-              checked={productDetails.available}
-            />
-            <label
-              htmlFor='available'
-              className='add-product-form-group-checkbox-label'
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center justify-center rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Available
-            </label>
+              {isSubmitting ? 'Saving product...' : 'Add product'}
+            </button>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              Clear draft
+            </button>
           </div>
-          <button
-            type="button"
-            className="add-product-form-button"
-            onClick={addProductHandler}>
-            Add Product
-          </button>
-        </form>
-      </div>
-    </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-100 bg-white/70 p-4 shadow-inner">
+          <p className="text-sm font-semibold text-slate-700">Live preview</p>
+          <div className="mt-4 flex flex-col gap-4">
+            <div className="aspect-square w-full overflow-hidden rounded-2xl bg-slate-100">
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-slate-400">Image preview</div>
+              )}
+            </div>
+            <div className="space-y-2 text-sm">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">{productDetails.category || 'Category'}</p>
+              <p className="text-lg font-semibold text-slate-900">
+                {productDetails.name || 'Product name'}
+              </p>
+              <div className="flex items-center gap-3">
+                <p className="text-lg font-bold text-brand-600">
+                  {productDetails.new_price ? `$${Number(productDetails.new_price).toFixed(2)}` : '$0.00'}
+                </p>
+                <p className="text-sm text-slate-400 line-through">
+                  {productDetails.old_price ? `$${Number(productDetails.old_price).toFixed(2)}` : ''}
+                </p>
+              </div>
+              <p className="text-sm text-slate-500">
+                {productDetails.description || 'Product description preview will appear here.'}
+              </p>
+              <span
+                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${productDetails.available
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'bg-slate-100 text-slate-500'
+                  }`}
+              >
+                {productDetails.available ? 'Visible in store' : 'Hidden'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
   )
 }
 
-export default AddProduct;
+export default AddProduct
