@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const Product = require('../models/Product');
 
@@ -16,6 +17,61 @@ module.exports = (upload) => {
       res.status(500).json({
         success: 0,
         message: 'Error fetching products',
+      });
+    }
+  });
+
+  // Helper to build a query that matches either Mongo _id or numeric id
+  const buildProductLookupQuery = (idParam) => {
+    if (typeof idParam === 'undefined' || idParam === null) {
+      return null;
+    }
+
+    const conditions = [];
+
+    if (typeof idParam === 'string' && mongoose.Types.ObjectId.isValid(idParam)) {
+      conditions.push({ _id: idParam });
+    }
+
+    const numericId = Number(idParam);
+    if (!Number.isNaN(numericId)) {
+      conditions.push({ id: numericId });
+    }
+
+    if (conditions.length === 0) {
+      return null;
+    }
+
+    return conditions.length === 1 ? conditions[0] : { $or: conditions };
+  };
+
+  // Endpoint to fetch a single product by id
+  router.get('/products/:id', async (req, res) => {
+    try {
+      const lookup = buildProductLookupQuery(req.params.id);
+      if (!lookup) {
+        return res.status(400).json({
+          success: 0,
+          message: 'Invalid product identifier',
+        });
+      }
+
+      const product = await Product.findOne(lookup);
+      if (!product) {
+        return res.status(404).json({
+          success: 0,
+          message: 'Product not found',
+        });
+      }
+      res.json({
+        success: 1,
+        product,
+      });
+    } catch (err) {
+      console.error('Error fetching product:', err);
+      res.status(500).json({
+        success: 0,
+        message: 'Error fetching product',
       });
     }
   });
@@ -54,7 +110,15 @@ module.exports = (upload) => {
   // Endpoint to delete a product from the database by id
   router.post('/delete-product', async (req, res) => {
     try {
-      const product = await Product.findOneAndDelete({ id: req.body.id });
+      const lookup = buildProductLookupQuery(req.body.id);
+      if (!lookup) {
+        return res.status(400).json({
+          success: 0,
+          message: 'Invalid product identifier',
+        });
+      }
+
+      const product = await Product.findOneAndDelete(lookup);
       if (!product) {
         return res.status(404).json({
           success: 0,
@@ -70,6 +134,49 @@ module.exports = (upload) => {
       res.status(500).json({
         success: 0,
         message: 'Error deleting product',
+      });
+    }
+  });
+
+  // Endpoint to update a product by id
+  router.put('/products/:id', async (req, res) => {
+    try {
+      const lookup = buildProductLookupQuery(req.params.id);
+      if (!lookup) {
+        return res.status(400).json({
+          success: 0,
+          message: 'Invalid product identifier',
+        });
+      }
+
+      const allowedFields = ['name', 'image', 'category', 'new_price', 'old_price', 'description', 'available'];
+      const updates = {};
+
+      allowedFields.forEach((field) => {
+        if (typeof req.body[field] !== 'undefined') {
+          updates[field] = req.body[field];
+        }
+      });
+
+      const updatedProduct = await Product.findOneAndUpdate(lookup, updates, { new: true });
+
+      if (!updatedProduct) {
+        return res.status(404).json({
+          success: 0,
+          message: 'Product not found',
+        });
+      }
+
+      res.json({
+        success: 1,
+        product: updatedProduct,
+        message: 'Product updated successfully',
+      });
+    } catch (err) {
+      console.error('Error updating product:', err);
+      res.status(500).json({
+        success: 0,
+        message: 'Error updating product',
       });
     }
   });
