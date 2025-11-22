@@ -6,12 +6,19 @@ const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 })
 
+const availabilityFilters = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'live', label: 'Live' },
+  { value: 'hidden', label: 'Hidden' },
+]
+
 const ProductList = () => {
   const [allProducts, setAllProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
+  const [availabilityFilter, setAvailabilityFilter] = useState('all')
   const [lastUpdated, setLastUpdated] = useState(null)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const navigate = useNavigate()
@@ -54,6 +61,24 @@ const ProductList = () => {
     }
   }
 
+  const inventoryStats = useMemo(() => {
+    const total = allProducts.length || 0
+    const live = allProducts.filter(product => product.available !== false).length
+    const hidden = total - live
+    const avg =
+      total > 0
+        ? allProducts.reduce((sum, product) => sum + (Number(product.new_price) || 0), 0) / total
+        : 0
+    const categories = new Set(allProducts.map(product => product.category || 'Uncategorized')).size
+    return {
+      total,
+      live,
+      hidden,
+      categories,
+      avg,
+    }
+  }, [allProducts])
+
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {
       const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter
@@ -61,9 +86,16 @@ const ProductList = () => {
       const matchesSearch = term
         ? product.name?.toLowerCase().includes(term) || product.category?.toLowerCase().includes(term)
         : true
-      return matchesCategory && matchesSearch
+      const isLive = product.available !== false
+      const matchesAvailability =
+        availabilityFilter === 'all'
+          ? true
+          : availabilityFilter === 'live'
+            ? isLive
+            : !isLive
+      return matchesCategory && matchesSearch && matchesAvailability
     })
-  }, [allProducts, categoryFilter, searchTerm])
+  }, [allProducts, availabilityFilter, categoryFilter, searchTerm])
 
   const skeletonRows = Array.from({ length: 4 })
 
@@ -81,6 +113,12 @@ const ProductList = () => {
     if (!targetId) return
     closeProductModal()
     navigate(`/edit-product/${targetId}`)
+  }
+
+  const handleClearFilters = () => {
+    setSearchTerm('')
+    setCategoryFilter('all')
+    setAvailabilityFilter('all')
   }
 
   return (
@@ -108,7 +146,30 @@ const ProductList = () => {
         </div>
       )}
 
-      <div className="space-y-4 rounded-3xl border border-slate-100 bg-white/80 p-4 shadow-inner">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Total SKUs</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{inventoryStats.total}</p>
+          <p className="text-xs text-slate-500">Across {inventoryStats.categories} categories</p>
+        </div>
+        <div className="rounded-2xl border border-white/60 bg-emerald-50/80 p-4 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-emerald-600">Live</p>
+          <p className="mt-2 text-2xl font-semibold text-emerald-700">{inventoryStats.live}</p>
+          <p className="text-xs text-emerald-700/70">Visible in storefront</p>
+        </div>
+        <div className="rounded-2xl border border-white/60 bg-amber-50/80 p-4 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-amber-600">Hidden</p>
+          <p className="mt-2 text-2xl font-semibold text-amber-700">{inventoryStats.hidden}</p>
+          <p className="text-xs text-amber-700/70">Awaiting publish</p>
+        </div>
+        <div className="rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Avg. price</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{currency.format(inventoryStats.avg || 0)}</p>
+          <p className="text-xs text-slate-500">Based on offer price</p>
+        </div>
+      </div>
+
+      <div className="space-y-4 rounded-3xl border border-slate-100 bg-white/80 p-4 shadow-inner lg:sticky lg:top-6">
         <div className="flex flex-wrap gap-4">
           <input
             type="search"
@@ -127,6 +188,29 @@ const ProductList = () => {
             <option value="men">Men</option>
             <option value="kids">Kids</option>
           </select>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {availabilityFilters.map(filter => (
+            <button
+              type="button"
+              key={filter.value}
+              onClick={() => setAvailabilityFilter(filter.value)}
+              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${availabilityFilter === filter.value
+                ? 'bg-slate-900 text-white shadow'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+            >
+              {filter.label}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="ml-auto text-xs font-semibold text-slate-500 underline-offset-4 hover:underline"
+          >
+            Clear filters
+          </button>
         </div>
 
         <div className="w-full overflow-auto">
@@ -231,9 +315,17 @@ const ProductList = () => {
         </div>
 
         {!loading && filteredProducts.length === 0 && (
-          <p className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
-            No products match your filters.
-          </p>
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center text-sm text-slate-500">
+            <p className="font-semibold text-slate-600">No products match your filters.</p>
+            <p className="mt-1 text-xs text-slate-500">Try a different search or reset your filters.</p>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="mt-3 inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-white"
+            >
+              Reset filters
+            </button>
+          </div>
         )}
       </div>
       {selectedProduct && (
