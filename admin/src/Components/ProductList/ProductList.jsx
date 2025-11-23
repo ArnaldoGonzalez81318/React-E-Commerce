@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const currency = new Intl.NumberFormat('en-US', {
@@ -23,7 +23,7 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const navigate = useNavigate()
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true)
       setError('')
@@ -38,13 +38,13 @@ const ProductList = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchProducts()
-  }, [])
+  }, [fetchProducts])
 
-  const deleteProduct = async id => {
+  const deleteProduct = useCallback(async id => {
     try {
       await fetch('http://localhost:4000/delete-product', {
         method: 'POST',
@@ -59,7 +59,7 @@ const ProductList = () => {
       console.error('Delete product error', err)
       setError('Unable to delete product. Please try again.')
     }
-  }
+  }, [fetchProducts])
 
   const inventoryStats = useMemo(() => {
     const total = allProducts.length || 0
