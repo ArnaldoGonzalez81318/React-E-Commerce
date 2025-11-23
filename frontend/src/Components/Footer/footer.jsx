@@ -69,9 +69,9 @@ const Footer = () => {
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 transition hover:bg-white/10"
+                  className="footer-social-link"
                 >
-                  <img src={link.icon} alt={link.label} className="h-5 w-5" />
+                  <img src={link.icon} alt={link.label} className="footer-social-icon" />
                   <span className="sr-only">{link.label}</span>
                 </a>
               ))}
