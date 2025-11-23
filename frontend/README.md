@@ -1,70 +1,50 @@
-# Getting Started with Create React App
+# Storefront (frontend)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Create React App storefront that powers the public shopping experience: hero landing, curated collections, product detail, cart, and authentication flows. Styling combines the global design tokens in `src/App.css` with per-component CSS modules for detailed layouts.
 
-## Available Scripts
+## Highlights
 
-In the project directory, you can run:
+- Home page with Trending, Offers, New Collections, Newsletter, and curated marketing rows
+- Category views (men, women, kids) powered by shared `ShopCategory` logic
+- Product detail with gallery, description box, reviews placeholder, and related products
+- Cart context handles quantity management, promo messaging, shipping selection, and recommendations
+- Login/Signup split layout with validation, stateful feedback, and social CTAs
 
-### `npm start`
+## Requirements
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js 18+
+- Backend API running locally at `http://localhost:4000`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## API Configuration
 
-### `npm test`
+All data-fetching URLs live inside `src/Context/shopContext.jsx`. Update the `fetch('http://localhost:4000/...')` calls (or extract a constant) if your backend runs on a different host/port.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Scripts
 
-### `npm run build`
+| Command         | Description                                           |
+| --------------- | ----------------------------------------------------- |
+| `npm start`     | Start CRA dev server at <http://localhost:3000>       |
+| `npm test`      | Run Jest + Testing Library in watch mode              |
+| `npm run build` | Create a production build in `build/`                 |
+| `npm run eject` | Permanently copy CRA configs (not recommended)        |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Getting Started
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+cd frontend
+npm install
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The CRA dev server proxies API requests directly to the backend URL you configure in the context. Ensure the backend is running so product, cart, and auth calls succeed.
 
-### `npm run eject`
+## Testing & Linting
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Component tests: `npm test`
+- Web vitals reporting lives in `src/reportWebVitals.js` if you need performance hooks
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Build & Deploy
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Run `npm run build`
+2. Deploy the generated `build/` directory to your static host (Netlify, Vercel, S3, etc.)
+3. Make sure environment-specific API URLs are updated before shipping
