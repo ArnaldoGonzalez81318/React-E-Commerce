@@ -1,73 +1,83 @@
-# React-eCommerce
- Introducing React E-Commerce, a comprehensive GitHub repository that equips you with everything you need to create a powerful online store using React JS. Dive into building your dream e-commerce website with ease, starting from the dynamic Home page featuring trending products, enticing offer banners, and a seamless newsletter subscription form.
+# React E-Commerce Platform
 
-# Getting Started with Create React App
+Modern storefront + admin command center + Node.js API in a single repository. The frontend offers a curated shopping experience with polished merchandising flows, the admin app manages catalog CRUD, and the backend exposes REST + file uploads backed by MongoDB.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Apps at a Glance
 
-## Available Scripts
+- `frontend/` – customer-facing React (CRA) application with modernized UI components and cart context logic.
+- `admin/` – Vite-powered dashboard for catalog operations, built with Tailwind CSS v4 utilities and React Router.
+- `backend/` – Express + MongoDB API providing product, user, cart, and media upload endpoints.
 
-In the project directory, you can run:
+Each folder now ships with its own README if you need feature-specific details or scripts.
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React 18, React Router 6, Context API
+- Tailwind CSS v4 (admin + shared design tokens), custom CSS modules (frontend)
+- Vite 5 (admin) and Create React App 5 (frontend)
+- Node.js 18+, Express 4, MongoDB via Mongoose 8, Multer uploads, JWT auth
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```text
+.
+├── admin/        # Vite + Tailwind admin dashboard
+├── backend/      # Express API + MongoDB models and routes
+├── frontend/     # Customer storefront built with CRA
+├── LICENSE
+└── README.md
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Prerequisites
 
-### `npm run build`
+- Node.js ≥ 18 and npm ≥ 9
+- MongoDB Atlas (or local MongoDB) connection string
+- Recommended: separate terminal for each workspace (`frontend`, `backend`, `admin`)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Environment Variables
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create `backend/.env` with at least:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```env
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster/sample
+PORT=4000           # optional (defaults to 4000)
+JWT_SECRET=replace-me
+```
 
-### `npm run eject`
+The frontend/admin communicate with the backend at `http://localhost:4000` by default, so update API base URLs if you change the port.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Install Dependencies
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+From the repo root run:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+cd backend && npm install
+cd ../frontend && npm install
+cd ../admin && npm install
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Or use your preferred package manager per folder.
 
-## Learn More
+## Run Everything Locally
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| App      | Command                | URL                    |
+| -------- | ---------------------- | ---------------------- |
+| backend  | `npm run dev`          | <http://localhost:4000> |
+| frontend | `npm start`            | <http://localhost:3000> |
+| admin    | `npm run dev`          | <http://localhost:5173> |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Start the backend first so media uploads and product APIs are available.
 
-### Code Splitting
+## Useful Scripts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- `frontend`: `npm test`, `npm run build`
+- `admin`: `npm run lint`, `npm run build`, `npm run preview`
+- `backend`: `npm start` (production), `npm run dev` (nodemon with auto-reload)
 
-### Analyzing the Bundle Size
+## Contributing & Next Steps
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. Create a feature branch, make changes, and run the relevant lint/tests listed above.
+2. Update documentation when endpoints or flows change (see the folder READMEs for per-app notes).
+3. Open a PR describing UX changes, backend migrations, and screenshots/gifs where helpful.
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Questions or bugs? File an issue with reproduction steps, screenshots, and the stack trace/log output.
