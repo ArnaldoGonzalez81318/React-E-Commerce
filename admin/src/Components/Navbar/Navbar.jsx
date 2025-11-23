@@ -8,7 +8,7 @@ const routeNameMap = {
 }
 
 const GenericAvatar = () => (
-  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-300 text-slate-600 shadow-inner ring-1 ring-white/60">
+  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-slate-200 to-slate-300 text-slate-600 shadow-inner ring-1 ring-white/60">
     <svg
       className="h-6 w-6"
       viewBox="0 0 24 24"
@@ -31,14 +31,12 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur">
-      <div className="mx-auto w-full max-w-[90rem] px-4 py-4 lg:px-10">
+      <div className="mx-auto w-full max-w-360 px-4 py-4 lg:px-10">
         <div className="flex flex-wrap items-center justify-between gap-5">
           <div className="flex items-center gap-3 text-left">
-            <img src={navLogo} alt="Shop brand mark" className="h-12 w-auto" />
-            <div className="flex flex-col leading-tight">
-              <p className="text-xs font-semibold uppercase tracking-[0.45em] text-slate-400">Shop</p>
-              <p className="text-sm font-semibold text-slate-900">Merchant Admin</p>
-            </div>
+            <Link to="/" aria-label="Return to admin dashboard">
+              <img src={navLogo} alt="Shop brand mark" className="h-12 w-auto" />
+            </Link>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {!isAddProductPage && (
