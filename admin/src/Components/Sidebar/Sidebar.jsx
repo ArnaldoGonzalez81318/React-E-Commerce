@@ -6,11 +6,11 @@ const navItems = [
   { to: '/product-list', label: 'Product List', description: 'Manage your catalog', icon: ListBulletIcon },
 ]
 
-const Sidebar = () => {
+const Sidebar = ({ className = '' }) => {
   return (
-    <aside className="w-full rounded-3xl border border-white/60 bg-white/90 shadow-xl shadow-slate-900/5 ring-1 ring-black/5 md:w-72">
+    <aside className={`w-full rounded-3xl border border-white/60 bg-white/90 shadow-xl shadow-slate-900/5 ring-1 ring-black/5 ${className}`}>
       <div className="flex flex-col gap-6 p-5">
-        <div className="rounded-3xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-slate-900 p-5 text-white shadow-lg">
+        <div className="rounded-3xl bg-linear-to-br from-indigo-500 via-indigo-600 to-slate-900 p-5 text-white shadow-lg">
           <p className="text-xs uppercase tracking-[0.3em] text-white/70">Catalog</p>
           <p className="mt-2 text-xl font-semibold">Manage storefront</p>
           <p className="mt-1 text-sm text-white/80">Keep listings fresh and inventory synced.</p>
