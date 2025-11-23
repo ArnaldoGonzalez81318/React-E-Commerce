@@ -10,6 +10,12 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
 const defaultColors = ['#0f172a', '#f97316', '#6366f1', '#10b981'];
 const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
 
+const perks = [
+  { title: 'Express shipping', body: 'Free 2-day delivery for orders over $150' },
+  { title: 'Hassle-free returns', body: '30-day returns with prepaid labels' },
+  { title: 'Concierge support', body: 'Real humans via chat, email, or phone' },
+];
+
 const ProductDisplay = ({ product }) => {
   const { addToCart } = useContext(ShopContext);
   const gallery = useMemo(() => {
@@ -22,10 +28,18 @@ const ProductDisplay = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState(defaultColors[0]);
   const [selectedSize, setSelectedSize] = useState('M');
+  const [wishlisted, setWishlisted] = useState(false);
+  const [shareState, setShareState] = useState({ status: 'idle', message: '' });
 
   useEffect(() => {
     setActiveImage(gallery[0]);
   }, [gallery]);
+
+  useEffect(() => {
+    if (shareState.status === 'idle') return;
+    const timeout = setTimeout(() => setShareState({ status: 'idle', message: '' }), 2500);
+    return () => clearTimeout(timeout);
+  }, [shareState]);
 
   const increaseQuantity = () => setQuantity(prev => Math.min(prev + 1, 10));
   const decreaseQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
@@ -34,6 +48,47 @@ const ProductDisplay = ({ product }) => {
     if (!product?.id) return;
     addToCart(product.id, quantity);
   };
+
+  const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+    const payload = {
+      title: product?.name || 'Product',
+      text: 'Check out this drop from React E-Commerce',
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(payload);
+        setShareState({ status: 'success', message: 'Shared successfully' });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(payload.url);
+        setShareState({ status: 'success', message: 'Link copied to clipboard' });
+      } else {
+        throw new Error('Sharing is not supported');
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      setShareState({ status: 'error', message: 'Unable to share right now' });
+    }
+  };
+
+  const specs = [
+    { label: 'SKU', value: product?.sku || `SKU-${product?.id ?? 'N/A'}` },
+    { label: 'Category', value: product?.category },
+    { label: 'Material', value: product?.material || 'Premium knit + leather mix' },
+    { label: 'Care', value: product?.care || 'Machine wash cold, lay flat to dry' },
+  ].filter(item => item.value);
+
+  const highlights = product?.highlights || [
+    'Cloud-like cushioning for all-day wear',
+    'Breathable mesh keeps you cool and agile',
+    'Responsive midsole absorbs every impact',
+    'Crafted with recycled materials to reduce impact',
+  ];
+
+  const descriptionText = product?.description ||
+    'Engineered for everyday movement with breathable knits, sculpted tailoring, and adaptive cushioning.';
+  const descriptionParagraphs = descriptionText.split(/\n+/).filter(Boolean);
 
   const priceOld = product?.old_price ? priceFormatter.format(product.old_price) : null;
   const priceNew = product?.new_price ? priceFormatter.format(product.new_price) : null;
@@ -73,12 +128,24 @@ const ProductDisplay = ({ product }) => {
         <div className='product-header'>
           <p className='pill'>Featured</p>
           <h1>{product?.name}</h1>
-          <p className='product-subtitle'>Engineered for everyday movement with breathable knits and sculpted tailoring.</p>
+          <p className='product-subtitle'>{descriptionParagraphs[0]}</p>
           <div className='product-price-row'>
             {priceNew && <span className='product-price-new'>{priceNew}</span>}
             {priceOld && <span className='product-price-old'>{priceOld}</span>}
             <span className='product-stock'>{product?.available ? 'In stock' : 'Ships soon'}</span>
           </div>
+        </div>
+
+        <div className='product-utilities'>
+          <button type='button' className={`utility-chip ${wishlisted ? 'is-active' : ''}`} onClick={() => setWishlisted(prev => !prev)}>
+            {wishlisted ? 'Saved to wishlist' : 'Save to wishlist'}
+          </button>
+          <button type='button' className='utility-chip' onClick={handleShare}>
+            Share
+          </button>
+          {shareState.message && (
+            <span className={`utility-feedback ${shareState.status}`}>{shareState.message}</span>
+          )}
         </div>
 
         <div className='product-options'>
@@ -135,11 +202,37 @@ const ProductDisplay = ({ product }) => {
           <button className='btn-secondary'>Buy now</button>
         </div>
 
-        <ul className='product-meta'>
-          <li>Free express shipping over $150</li>
-          <li>Free 30-day returns</li>
-          <li>Carbon-neutral packaging</li>
-        </ul>
+        <div className='product-description'>
+          {descriptionParagraphs.slice(1).map((text, index) => (
+            <p key={index}>{text}</p>
+          ))}
+        </div>
+
+        <div className='product-specs'>
+          {specs.map(spec => (
+            <div key={spec.label}>
+              <span>{spec.label}</span>
+              <p>{spec.value}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className='product-meta'>
+          <ul>
+            {highlights.map(highlight => (
+              <li key={highlight}>{highlight}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className='product-perks'>
+          {perks.map(perk => (
+            <article key={perk.title}>
+              <p>{perk.title}</p>
+              <span>{perk.body}</span>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
