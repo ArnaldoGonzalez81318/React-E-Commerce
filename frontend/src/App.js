@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 import NavBar from './Components/NavBar/navBar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -15,7 +14,7 @@ import kids_banner from './Components/Assets/banner_kids.png';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900">
+    <div className="min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-50 text-slate-900">
       <a className="skip-nav" href="#main">
         Skip to content
       </a>
