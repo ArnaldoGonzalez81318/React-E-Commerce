@@ -3,7 +3,15 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Product = require('../models/Product');
 
-module.exports = (upload) => {
+const sanitizeBaseUrl = (url) => (url || '').replace(/\/$/, '');
+
+const getNextProductId = async () => {
+  const latestProduct = await Product.findOne().sort({ id: -1 }).lean();
+  return latestProduct?.id ? latestProduct.id + 1 : 1;
+};
+
+module.exports = (upload, baseUrl = `http://localhost:${process.env.PORT || 4000}`) => {
+  const normalizedBaseUrl = sanitizeBaseUrl(baseUrl);
   // Endpoint to get all products from the database
   router.get('/products', async (req, res) => {
     try {
@@ -79,8 +87,7 @@ module.exports = (upload) => {
   // Endpoint to add a product to the database
   router.post('/add-product', async (req, res) => {
     try {
-      const products = await Product.find();
-      const id = products.length > 0 ? products[products.length - 1].id + 1 : 1;
+      const id = await getNextProductId();
 
       const product = new Product({
         id: id,
@@ -227,7 +234,7 @@ module.exports = (upload) => {
     }
     res.status(200).json({
       success: 1,
-      profile_url: `http://localhost:${process.env.PORT}/images/${req.file.filename}`,
+      profile_url: `${normalizedBaseUrl}/images/${req.file.filename}`,
     });
   }, (error, req, res, next) => {
     console.error('Upload error:', error);
