@@ -4,27 +4,34 @@ import { Link } from 'react-router-dom';
 
 import './breadcrumbs.css';
 
-const Breadcrumbs = (props) => {
-  const { product } = props;
+const Breadcrumbs = ({ product }) => {
+  const crumbs = [
+    { label: 'Home', to: '/' },
+    { label: 'Shop', to: '/shop' },
+    product?.category && { label: product.category, to: `/category/${product.category}` },
+    product?.name && { label: product.name },
+  ].filter(Boolean);
 
-  console.log('Props in breadcrumbs:', props);
-  console.log('Product in breadcrumbs:', product);
-
-  if (!product) {
-    return <div className="breadcrumbs">No product data available</div>;
+  if (!crumbs.length) {
+    return null;
   }
 
   return (
-    <div className='breadcrumbs'>
-      <div className="breadcrumbs-container">
-        <Link to='/'>Home</Link>
-        <Link to='/shop'>Shop</Link>
-        <Link to={`/category/${product.category}`}>{product.category}</Link>
-        <p>{product.name}</p>
-      </div>
-    </div>
+    <nav className='breadcrumbs' aria-label='Breadcrumb'>
+      <ol className='breadcrumbs-list'>
+        {crumbs.map((crumb, index) => (
+          <li key={`${crumb.label}-${index}`} className='breadcrumbs-item'>
+            {crumb.to && index !== crumbs.length - 1 ? (
+              <Link to={crumb.to}>{crumb.label}</Link>
+            ) : (
+              <span aria-current='page'>{crumb.label || 'Product'}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
-}
+};
 
 Breadcrumbs.propTypes = {
   product: PropTypes.shape({
