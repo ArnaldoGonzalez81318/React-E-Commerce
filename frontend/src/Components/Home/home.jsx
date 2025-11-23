@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import hand_icon from '../Assets/hand_icon.png'
 import hero_image from '../Assets/hero_image.png'
@@ -12,8 +11,8 @@ const stats = [
 
 const Home = () => {
   return (
-    <section className="relative isolate overflow-hidden bg-gradient-to-br from-brand-50 via-white to-indigo-50">
-      <div className="pointer-events-none absolute inset-y-0 right-1/4 -z-10 h-[32rem] w-[32rem] rounded-full bg-brand-200/40 blur-3xl" aria-hidden />
+    <section className="relative isolate overflow-hidden bg-linear-to-br from-brand-50 via-white to-indigo-50">
+      <div className="pointer-events-none absolute inset-y-0 right-1/4 -z-10 h-128 w-lg rounded-full bg-brand-200/40 blur-3xl" aria-hidden="true" />
       <div className="container-grid flex flex-col-reverse items-center gap-12 py-16 lg:flex-row lg:py-24">
         <div className="w-full max-w-xl space-y-6 text-center lg:text-left">
           <div className="inline-flex items-center gap-2 rounded-full border border-brand-200/60 bg-white/90 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-brand-700">
@@ -60,7 +59,7 @@ const Home = () => {
           </div>
         </div>
         <div className="relative w-full max-w-md">
-          <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-brand-300/60 to-slate-900/30 blur-3xl" aria-hidden />
+          <div className="absolute -inset-4 rounded-[2.5rem] bg-linear-to-br from-brand-300/60 to-slate-900/30 blur-3xl" aria-hidden="true" />
           <div className="relative overflow-hidden rounded-[2.5rem] bg-white/50 p-6 shadow-2xl">
             <img src={hero_image} alt="Featured look" className="mx-auto h-full w-full object-contain" />
           </div>
