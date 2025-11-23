@@ -32,13 +32,24 @@ const fetchUser = async (req, res, next) => {
   }
 };
 
+const ensureProductId = (productId, res) => {
+  if (typeof productId === 'undefined' || productId === null) {
+    res.status(400).json({ success: 0, message: 'productId is required' });
+    return false;
+  }
+  return true;
+};
+
 // Endpoint to add a product to the cart data
 router.post('/add-to-cart', fetchUser, async (req, res) => {
   try {
-    const userData = await User.findOne({ _id: req.user.id });
-    userData.cartData[req.body.productId] += 1;
+    const { productId, quantity = 1 } = req.body;
+    if (!ensureProductId(productId, res)) return;
+    const key = productId.toString();
+    const safeQuantity = Math.max(1, Number(quantity) || 1);
+    req.user.cartData[key] = (req.user.cartData[key] || 0) + safeQuantity;
 
-    await User.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData });
+    await req.user.save();
     res.json({
       success: 1,
       message: 'Product added to cart successfully',
@@ -55,10 +66,13 @@ router.post('/add-to-cart', fetchUser, async (req, res) => {
 // Endpoint to remove a product from the cart data
 router.post('/remove-from-cart', fetchUser, async (req, res) => {
   try {
-    const userData = await User.findOne({ _id: req.user.id });
-    userData.cartData[req.body.productId] = Math.max(0, userData.cartData[req.body.productId] - 1);
+    const { productId } = req.body;
+    if (!ensureProductId(productId, res)) return;
+    const key = productId.toString();
+    const current = req.user.cartData[key] || 0;
+    req.user.cartData[key] = Math.max(0, current - 1);
 
-    await User.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData });
+    await req.user.save();
     res.json({
       success: 1,
       message: 'Product removed from cart successfully',
@@ -75,10 +89,12 @@ router.post('/remove-from-cart', fetchUser, async (req, res) => {
 // Endpoint to remove a product completely from the cart
 router.post('/remove-product-from-cart', fetchUser, async (req, res) => {
   try {
-    const userData = await User.findOne({ _id: req.user.id });
-    userData.cartData[req.body.productId] = 0;
+    const { productId } = req.body;
+    if (!ensureProductId(productId, res)) return;
+    const key = productId.toString();
+    req.user.cartData[key] = 0;
 
-    await User.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData });
+    await req.user.save();
     res.json({
       success: 1,
       message: 'Product removed completely from cart',
@@ -95,10 +111,9 @@ router.post('/remove-product-from-cart', fetchUser, async (req, res) => {
 // Endpoint to get the cart data for the user
 router.get('/cart', fetchUser, async (req, res) => {
   try {
-    const userData = await User.findOne({ _id: req.user.id });
     res.json({
       success: 1,
-      cartData: userData.cartData,
+      cartData: req.user.cartData,
     });
   } catch (err) {
     console.error('Error fetching cart data:', err);
