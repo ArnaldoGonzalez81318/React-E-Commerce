@@ -8,7 +8,11 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
 });
 
 const defaultColors = ['#0f172a', '#f97316', '#6366f1', '#10b981'];
-const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+const fallbackSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+const footwearFallbackSizes = Array.from({ length: 30 }, (_, index) => {
+  const value = 3.5 + index * 0.5;
+  return Number.isInteger(value) ? value.toFixed(0) : value.toString();
+});
 
 const perks = [
   { title: 'Express shipping', body: 'Free 2-day delivery for orders over $150' },
@@ -24,16 +28,38 @@ const ProductDisplay = ({ product }) => {
     return unique.slice(0, 4);
   }, [product]);
 
+  const colorOptions = useMemo(() => {
+    if (product?.variants?.colors?.length) return product.variants.colors;
+    if (product?.swatches?.length) return product.swatches;
+    return defaultColors;
+  }, [product]);
+
+  const sizeOptions = useMemo(() => {
+    if (product?.variants?.sizeType === 'none') return [];
+    if (product?.variants?.sizes?.length) return product.variants.sizes;
+    if (product?.sizes?.length) return product.sizes;
+    if (product?.productType === 'footwear') return footwearFallbackSizes;
+    return fallbackSizes;
+  }, [product]);
+
   const [activeImage, setActiveImage] = useState(gallery[0]);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(defaultColors[0]);
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedColor, setSelectedColor] = useState(colorOptions[0]);
+  const [selectedSize, setSelectedSize] = useState(sizeOptions[0]);
   const [wishlisted, setWishlisted] = useState(false);
   const [shareState, setShareState] = useState({ status: 'idle', message: '' });
 
   useEffect(() => {
     setActiveImage(gallery[0]);
   }, [gallery]);
+
+  useEffect(() => {
+    setSelectedColor(colorOptions[0]);
+  }, [colorOptions]);
+
+  useEffect(() => {
+    setSelectedSize(sizeOptions[0]);
+  }, [sizeOptions]);
 
   useEffect(() => {
     if (shareState.status === 'idle') return;
@@ -75,6 +101,8 @@ const ProductDisplay = ({ product }) => {
   const specs = [
     { label: 'SKU', value: product?.sku || `SKU-${product?.id ?? 'N/A'}` },
     { label: 'Category', value: product?.category },
+    { label: 'Type', value: product?.productType },
+    { label: 'Size run', value: product?.variants?.sizeType === 'numeric' ? 'Half sizes 3.5 - 18' : product?.variants?.sizeType === 'alpha' ? 'XS - 2XL' : null },
     { label: 'Material', value: product?.material || 'Premium knit + leather mix' },
     { label: 'Care', value: product?.care || 'Machine wash cold, lay flat to dry' },
   ].filter(item => item.value);
@@ -152,7 +180,7 @@ const ProductDisplay = ({ product }) => {
           <div>
             <p className='label'>Color</p>
             <div className='swatches'>
-              {(product?.swatches || defaultColors).map(color => (
+              {colorOptions.map(color => (
                 <button
                   key={color}
                   type='button'
@@ -165,21 +193,23 @@ const ProductDisplay = ({ product }) => {
             </div>
           </div>
 
-          <div>
-            <p className='label'>Size</p>
-            <div className='sizes'>
-              {(product?.sizes || availableSizes).map(size => (
-                <button
-                  key={size}
-                  type='button'
-                  className={`size-chip ${selectedSize === size ? 'active' : ''}`}
-                  onClick={() => setSelectedSize(size)}
-                >
-                  {size}
-                </button>
-              ))}
+          {sizeOptions.length > 0 && (
+            <div>
+              <p className='label'>Size</p>
+              <div className='sizes'>
+                {sizeOptions.map(size => (
+                  <button
+                    key={size}
+                    type='button'
+                    className={`size-chip ${selectedSize === size ? 'active' : ''}`}
+                    onClick={() => setSelectedSize(size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <p className='label'>Quantity</p>
