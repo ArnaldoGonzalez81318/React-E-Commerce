@@ -1,14 +1,58 @@
 import { useEffect, useMemo, useState } from 'react'
 import uploadArea from '../../assets/upload_area.svg'
 
-const emptyProduct = {
-  name: '',
-  image: '',
-  category: '',
-  old_price: '',
-  new_price: '',
-  description: '',
-  available: true,
+const variationConfigs = {
+  apparel: {
+    label: 'Apparel (tees, coats, etc.)',
+    sizeType: 'alpha',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
+    colors: ['#0f172a', '#1f2937', '#475569', '#f97316', '#6366f1', '#0ea5e9'],
+  },
+  footwear: {
+    label: 'Footwear (sneakers, boots, slides)',
+    sizeType: 'numeric',
+    sizes: Array.from({ length: 30 }, (_, index) => {
+      const value = 3.5 + index * 0.5
+      return Number.isInteger(value) ? value.toFixed(0) : value.toString()
+    }),
+    colors: ['#0f172a', '#1e293b', '#dc2626', '#f59e0b', '#10b981'],
+  },
+  accessory: {
+    label: 'Accessory (bags, jewelry, etc.)',
+    sizeType: 'none',
+    sizes: [],
+    colors: ['#0f172a', '#6366f1'],
+  },
+  other: {
+    label: 'Other',
+    sizeType: 'none',
+    sizes: [],
+    colors: [],
+  },
+}
+
+const getDefaultVariants = (type = 'apparel') => {
+  const config = variationConfigs[type] || variationConfigs.other
+  return {
+    sizes: [...config.sizes],
+    colors: [...config.colors],
+  }
+}
+
+const buildEmptyProduct = () => {
+  const defaults = getDefaultVariants('apparel')
+  return {
+    name: '',
+    image: '',
+    category: '',
+    productType: 'apparel',
+    old_price: '',
+    new_price: '',
+    description: '',
+    available: true,
+    variantSizes: defaults.sizes,
+    variantColors: defaults.colors,
+  }
 }
 
 const categoryOptions = [
@@ -20,11 +64,14 @@ const categoryOptions = [
 
 const AddProduct = () => {
   const [image, setImage] = useState(null)
-  const [productDetails, setProductDetails] = useState(emptyProduct)
+  const [productDetails, setProductDetails] = useState(() => buildEmptyProduct())
   const [status, setStatus] = useState({ type: 'idle', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [customSize, setCustomSize] = useState('')
+  const [customColor, setCustomColor] = useState('')
 
   const previewUrl = useMemo(() => (image ? URL.createObjectURL(image) : null), [image])
+  const variationConfig = variationConfigs[productDetails.productType] || variationConfigs.other
 
   useEffect(() => {
     return () => {
@@ -40,6 +87,18 @@ const AddProduct = () => {
 
   const changeHandler = event => {
     const { name, value, type, checked } = event.target
+
+    if (name === 'productType') {
+      const defaults = getDefaultVariants(value)
+      setProductDetails(prev => ({
+        ...prev,
+        productType: value,
+        variantSizes: defaults.sizes,
+        variantColors: defaults.colors,
+      }))
+      return
+    }
+
     setProductDetails(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -47,9 +106,11 @@ const AddProduct = () => {
   }
 
   const resetForm = () => {
-    setProductDetails(emptyProduct)
+    setProductDetails(buildEmptyProduct())
     setImage(null)
     setStatus({ type: 'idle', message: '' })
+    setCustomSize('')
+    setCustomColor('')
   }
 
   const validateForm = () => {
@@ -60,6 +121,12 @@ const AddProduct = () => {
     if (!productDetails.new_price) issues.push('offer price')
     if (!productDetails.description.trim()) issues.push('description')
     if (!image) issues.push('hero image')
+
+    const requiresSizes = ['apparel', 'footwear'].includes(productDetails.productType)
+    const requiresColors = ['apparel', 'footwear'].includes(productDetails.productType)
+
+    if (requiresSizes && productDetails.variantSizes.length === 0) issues.push('at least one size')
+    if (requiresColors && productDetails.variantColors.length === 0) issues.push('at least one color')
     return issues
   }
 
@@ -92,9 +159,16 @@ const AddProduct = () => {
         throw new Error(uploadData?.message || 'Image upload failed')
       }
 
+      const { variantSizes, variantColors, ...productPayload } = productDetails
+
       const payload = {
-        ...productDetails,
+        ...productPayload,
         image: uploadData.profile_url,
+        variants: {
+          sizeType: variationConfig.sizeType,
+          sizes: variantSizes,
+          colors: variantColors,
+        },
       }
 
       setStatus({ type: 'info', message: 'Saving product...' })
@@ -240,6 +314,161 @@ const AddProduct = () => {
                   className="h-5 w-5 accent-brand-500"
                 />
               </label>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="productType">
+                Product type
+              </label>
+              <select
+                id="productType"
+                name="productType"
+                value={productDetails.productType}
+                onChange={changeHandler}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              >
+                {Object.entries(variationConfigs).map(([value, option]) => (
+                  <option key={value} value={value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2 text-sm">
+              <p className="font-medium text-slate-700">Variation preset</p>
+              <p className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-slate-500">
+                {variationConfig.sizeType === 'alpha'
+                  ? 'Use apparel sizes (XS-2XL) plus curated colors.'
+                  : variationConfig.sizeType === 'numeric'
+                    ? 'Use half-size footwear range plus color palette.'
+                    : 'Optional variations for accessories.'}
+              </p>
+            </div>
+          </div>
+
+          {variationConfig.sizeType !== 'none' && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-700">Sizes</p>
+                <span className="text-xs uppercase tracking-[0.2em] text-slate-400">Select all that apply</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(variationConfig.sizes.length
+                  ? Array.from(new Set([...variationConfig.sizes, ...productDetails.variantSizes]))
+                  : productDetails.variantSizes
+                ).map(size => {
+                  const isActive = productDetails.variantSizes.includes(size)
+                  return (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => {
+                        setProductDetails(prev => ({
+                          ...prev,
+                          variantSizes: isActive
+                            ? prev.variantSizes.filter(item => item !== size)
+                            : [...prev.variantSizes, size],
+                        }))
+                      }}
+                      className={`rounded-full border px-3 py-1 text-sm font-medium transition ${isActive
+                        ? 'border-brand-200 bg-brand-50 text-brand-700'
+                        : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+                    >
+                      {size}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="text"
+                  value={customSize}
+                  onChange={event => setCustomSize(event.target.value)}
+                  placeholder="Add custom size"
+                  className="w-40 rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const value = customSize.trim()
+                    if (!value) return
+                    setProductDetails(prev => ({
+                      ...prev,
+                      variantSizes: prev.variantSizes.includes(value)
+                        ? prev.variantSizes
+                        : [...prev.variantSizes, value],
+                    }))
+                    setCustomSize('')
+                  }}
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+                >
+                  Add size
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-700">Colors</p>
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">Select swatches</span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {(variationConfig.colors.length
+                ? Array.from(new Set([...variationConfig.colors, ...productDetails.variantColors]))
+                : productDetails.variantColors
+              ).map(color => {
+                const isActive = productDetails.variantColors.includes(color)
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => {
+                      setProductDetails(prev => ({
+                        ...prev,
+                        variantColors: isActive
+                          ? prev.variantColors.filter(item => item !== color)
+                          : [...prev.variantColors, color],
+                      }))
+                    }}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition ${isActive
+                      ? 'border-brand-500'
+                      : 'border-transparent'}`}
+                    style={{ backgroundColor: color, color: '#fff' }}
+                    aria-label={`Toggle color ${color}`}
+                  >
+                    {isActive ? '✓' : ''}
+                  </button>
+                )
+              })}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="text"
+                value={customColor}
+                onChange={event => setCustomColor(event.target.value)}
+                placeholder="Add hex or color name"
+                className="w-56 rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const value = customColor.trim()
+                  if (!value) return
+                  setProductDetails(prev => ({
+                    ...prev,
+                    variantColors: prev.variantColors.includes(value)
+                      ? prev.variantColors
+                      : [...prev.variantColors, value],
+                  }))
+                  setCustomColor('')
+                }}
+                className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                Add color
+              </button>
             </div>
           </div>
 
