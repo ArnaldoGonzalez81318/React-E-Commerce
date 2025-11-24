@@ -2,6 +2,58 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import uploadArea from '../../assets/upload_area.svg'
 
+const variationConfigs = {
+  apparel: {
+    label: 'Apparel (tees, coats, etc.)',
+    sizeType: 'alpha',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
+    colors: ['#0f172a', '#1f2937', '#475569', '#f97316', '#6366f1', '#0ea5e9'],
+  },
+  footwear: {
+    label: 'Footwear (sneakers, boots, slides)',
+    sizeType: 'numeric',
+    sizes: Array.from({ length: 30 }, (_, index) => {
+      const value = 3.5 + index * 0.5
+      return Number.isInteger(value) ? value.toFixed(0) : value.toString()
+    }),
+    colors: ['#0f172a', '#1e293b', '#dc2626', '#f59e0b', '#10b981'],
+  },
+  accessory: {
+    label: 'Accessory (bags, jewelry, etc.)',
+    sizeType: 'none',
+    sizes: [],
+    colors: ['#0f172a', '#6366f1'],
+  },
+  other: {
+    label: 'Other',
+    sizeType: 'none',
+    sizes: [],
+    colors: [],
+  },
+}
+
+const inferProductType = (explicitType, category = '') => {
+  if (explicitType && variationConfigs[explicitType]) {
+    return explicitType
+  }
+  const normalizedCategory = category.toLowerCase()
+  if (/shoe|sneaker|footwear|boot|flip|cleat/.test(normalizedCategory)) {
+    return 'footwear'
+  }
+  if (/tee|shirt|dress|coat|jacket|men|women|kids|hoodie|sweatshirt/.test(normalizedCategory)) {
+    return 'apparel'
+  }
+  return 'other'
+}
+
+const getDefaultVariants = (type = 'apparel') => {
+  const config = variationConfigs[type] || variationConfigs.other
+  return {
+    sizes: [...config.sizes],
+    colors: [...config.colors],
+  }
+}
+
 const parseJsonResponse = async response => {
   const contentType = response.headers.get('content-type') || ''
   if (contentType.includes('application/json')) {
@@ -16,14 +68,23 @@ const parseJsonResponse = async response => {
   return { success: 0, message: fallbackText || 'Unexpected response format from server' }
 }
 
-const emptyProduct = {
-  name: '',
-  image: '',
-  category: '',
-  old_price: '',
-  new_price: '',
-  description: '',
-  available: true,
+const buildProductState = (product = {}) => {
+  const inferredType = inferProductType(product.productType, product.category)
+  const productType = product.productType || product.category ? inferredType : 'apparel'
+  const defaults = getDefaultVariants(productType)
+  const variants = product.variants || {}
+  return {
+    name: product.name || '',
+    image: product.image || '',
+    category: product.category || '',
+    productType,
+    old_price: product.old_price ?? '',
+    new_price: product.new_price ?? '',
+    description: product.description || '',
+    available: typeof product.available === 'boolean' ? product.available : true,
+    variantSizes: variants.sizes?.length ? [...variants.sizes] : defaults.sizes,
+    variantColors: variants.colors?.length ? [...variants.colors] : defaults.colors,
+  }
 }
 
 const categoryOptions = [
@@ -37,12 +98,18 @@ const EditProduct = () => {
   const { productId } = useParams()
   const navigate = useNavigate()
   const [image, setImage] = useState(null)
-  const [productDetails, setProductDetails] = useState(emptyProduct)
-  const [originalProduct, setOriginalProduct] = useState(emptyProduct)
+  const [productDetails, setProductDetails] = useState(() => buildProductState())
+  const [originalProduct, setOriginalProduct] = useState(() => buildProductState())
   const [status, setStatus] = useState({ type: 'idle', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [previewUrl, setPreviewUrl] = useState('')
+  const [customSize, setCustomSize] = useState('')
+  const [customColor, setCustomColor] = useState('')
+
+  const variationConfig = variationConfigs[productDetails.productType] || variationConfigs.other
+  const requiresSizes = variationConfig.sizeType !== 'none'
+  const requiresColors = ['apparel', 'footwear'].includes(productDetails.productType)
 
   useEffect(() => {
     if (image) {
@@ -70,8 +137,13 @@ const EditProduct = () => {
             : `Unable to load product (HTTP ${response.status})`)
           throw new Error(message)
         }
-        setProductDetails({ ...emptyProduct, ...data.product })
-        setOriginalProduct({ ...emptyProduct, ...data.product })
+        const normalizedProduct = buildProductState(data.product)
+        setProductDetails(normalizedProduct)
+        setOriginalProduct({
+          ...normalizedProduct,
+          variantSizes: [...normalizedProduct.variantSizes],
+          variantColors: [...normalizedProduct.variantColors],
+        })
         setStatus({ type: 'idle', message: '' })
       } catch (error) {
         console.error('Fetch product error', error)
@@ -92,6 +164,18 @@ const EditProduct = () => {
 
   const changeHandler = event => {
     const { name, value, type, checked } = event.target
+
+    if (name === 'productType') {
+      const defaults = getDefaultVariants(value)
+      setProductDetails(prev => ({
+        ...prev,
+        productType: value,
+        variantSizes: defaults.sizes,
+        variantColors: defaults.colors,
+      }))
+      return
+    }
+
     setProductDetails(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -99,9 +183,15 @@ const EditProduct = () => {
   }
 
   const resetForm = () => {
-    setProductDetails(originalProduct)
+    setProductDetails({
+      ...originalProduct,
+      variantSizes: [...originalProduct.variantSizes],
+      variantColors: [...originalProduct.variantColors],
+    })
     setImage(null)
     setStatus({ type: 'idle', message: '' })
+    setCustomSize('')
+    setCustomColor('')
   }
 
   const validateForm = () => {
@@ -112,6 +202,9 @@ const EditProduct = () => {
     if (!productDetails.new_price) issues.push('offer price')
     if (!productDetails.description.trim()) issues.push('description')
     if (!productDetails.image && !image) issues.push('hero image')
+
+    if (requiresSizes && productDetails.variantSizes.length === 0) issues.push('at least one size')
+    if (requiresColors && productDetails.variantColors.length === 0) issues.push('at least one color')
     return issues
   }
 
@@ -159,6 +252,12 @@ const EditProduct = () => {
         description: productDetails.description,
         available: productDetails.available,
         image: imageUrl,
+        productType: productDetails.productType,
+        variants: {
+          sizeType: variationConfig.sizeType,
+          sizes: productDetails.variantSizes,
+          colors: productDetails.variantColors,
+        },
       }
 
       setStatus({ type: 'info', message: 'Saving changes...' })
@@ -178,9 +277,17 @@ const EditProduct = () => {
         throw new Error(data?.message || `Unable to update product (HTTP ${response.status})`)
       }
 
+      const updatedState = {
+        ...productDetails,
+        image: imageUrl,
+      }
       setStatus({ type: 'success', message: 'Product updated successfully' })
-      setOriginalProduct({ ...productDetails, image: imageUrl })
-      setProductDetails(prev => ({ ...prev, image: imageUrl }))
+      setOriginalProduct({
+        ...updatedState,
+        variantSizes: [...updatedState.variantSizes],
+        variantColors: [...updatedState.variantColors],
+      })
+      setProductDetails(updatedState)
       setImage(null)
     } catch (error) {
       console.error('Update product error', error)
@@ -323,6 +430,161 @@ const EditProduct = () => {
                   className="h-5 w-5 accent-brand-500"
                 />
               </label>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="productType">
+                Product type
+              </label>
+              <select
+                id="productType"
+                name="productType"
+                value={productDetails.productType}
+                onChange={changeHandler}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              >
+                {Object.entries(variationConfigs).map(([value, option]) => (
+                  <option key={value} value={value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2 text-sm">
+              <p className="font-medium text-slate-700">Variation preset</p>
+              <p className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-slate-500">
+                {variationConfig.sizeType === 'alpha'
+                  ? 'Use apparel sizes (XS-2XL) plus curated colors.'
+                  : variationConfig.sizeType === 'numeric'
+                    ? 'Use half-size footwear range plus color palette.'
+                    : 'Optional variations for accessories.'}
+              </p>
+            </div>
+          </div>
+
+          {variationConfig.sizeType !== 'none' && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-700">Sizes</p>
+                <span className="text-xs uppercase tracking-[0.2em] text-slate-400">Select all that apply</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(variationConfig.sizes.length
+                  ? Array.from(new Set([...variationConfig.sizes, ...productDetails.variantSizes]))
+                  : productDetails.variantSizes
+                ).map(size => {
+                  const isActive = productDetails.variantSizes.includes(size)
+                  return (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => {
+                        setProductDetails(prev => ({
+                          ...prev,
+                          variantSizes: isActive
+                            ? prev.variantSizes.filter(item => item !== size)
+                            : [...prev.variantSizes, size],
+                        }))
+                      }}
+                      className={`rounded-full border px-3 py-1 text-sm font-medium transition ${isActive
+                        ? 'border-brand-200 bg-brand-50 text-brand-700'
+                        : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+                    >
+                      {size}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="text"
+                  value={customSize}
+                  onChange={event => setCustomSize(event.target.value)}
+                  placeholder="Add custom size"
+                  className="w-40 rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const value = customSize.trim()
+                    if (!value) return
+                    setProductDetails(prev => ({
+                      ...prev,
+                      variantSizes: prev.variantSizes.includes(value)
+                        ? prev.variantSizes
+                        : [...prev.variantSizes, value],
+                    }))
+                    setCustomSize('')
+                  }}
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+                >
+                  Add size
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-700">Colors</p>
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">Select swatches</span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {(variationConfig.colors.length
+                ? Array.from(new Set([...variationConfig.colors, ...productDetails.variantColors]))
+                : productDetails.variantColors
+              ).map(color => {
+                const isActive = productDetails.variantColors.includes(color)
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => {
+                      setProductDetails(prev => ({
+                        ...prev,
+                        variantColors: isActive
+                          ? prev.variantColors.filter(item => item !== color)
+                          : [...prev.variantColors, color],
+                      }))
+                    }}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition ${isActive
+                      ? 'border-brand-500'
+                      : 'border-transparent'}`}
+                    style={{ backgroundColor: color, color: '#fff' }}
+                    aria-label={`Toggle color ${color}`}
+                  >
+                    {isActive ? '✓' : ''}
+                  </button>
+                )
+              })}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="text"
+                value={customColor}
+                onChange={event => setCustomColor(event.target.value)}
+                placeholder="Add hex or color name"
+                className="w-56 rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const value = customColor.trim()
+                  if (!value) return
+                  setProductDetails(prev => ({
+                    ...prev,
+                    variantColors: prev.variantColors.includes(value)
+                      ? prev.variantColors
+                      : [...prev.variantColors, value],
+                  }))
+                  setCustomColor('')
+                }}
+                className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                Add color
+              </button>
             </div>
           </div>
 
