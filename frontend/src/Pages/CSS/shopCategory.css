@@ -57,9 +57,10 @@
   padding: 1rem 1.25rem;
   border-radius: 24px;
   background: rgba(15, 23, 42, 0.04);
+  color: #0f172a;
 }
 
-.stat-label {
+.shop-category-stats .stat-label {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -67,10 +68,11 @@
   margin: 0 0 0.35rem;
 }
 
-.stat-value {
+.shop-category-stats .stat-value {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
+  color: #0f172a;
 }
 
 .shop-category-eyebrow {
