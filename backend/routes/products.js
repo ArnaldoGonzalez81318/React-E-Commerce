@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Product = require('../models/Product');
+const { inferProductType, buildVariantPayload } = require('../utils/variationHelper');
 
 const sanitizeBaseUrl = (url) => (url || '').replace(/\/$/, '');
 
@@ -88,15 +89,19 @@ module.exports = (upload, baseUrl = `http://localhost:${process.env.PORT || 4000
   router.post('/add-product', async (req, res) => {
     try {
       const id = await getNextProductId();
+      const productType = inferProductType(req.body.productType, req.body.category);
+      const variants = buildVariantPayload(req.body.variants, productType);
 
       const product = new Product({
         id: id,
         name: req.body.name,
         image: req.body.image,
         category: req.body.category,
+        productType,
         new_price: req.body.new_price,
         old_price: req.body.old_price,
         description: req.body.description,
+        variants,
         available: req.body.available,
       });
 
@@ -156,23 +161,32 @@ module.exports = (upload, baseUrl = `http://localhost:${process.env.PORT || 4000
         });
       }
 
-      const allowedFields = ['name', 'image', 'category', 'new_price', 'old_price', 'description', 'available'];
-      const updates = {};
-
-      allowedFields.forEach((field) => {
-        if (typeof req.body[field] !== 'undefined') {
-          updates[field] = req.body[field];
-        }
-      });
-
-      const updatedProduct = await Product.findOneAndUpdate(lookup, updates, { new: true });
-
-      if (!updatedProduct) {
+      const product = await Product.findOne(lookup);
+      if (!product) {
         return res.status(404).json({
           success: 0,
           message: 'Product not found',
         });
       }
+
+      const allowedFields = ['name', 'image', 'category', 'new_price', 'old_price', 'description', 'available'];
+
+      allowedFields.forEach((field) => {
+        if (typeof req.body[field] !== 'undefined') {
+          product[field] = req.body[field];
+        }
+      });
+
+      if (typeof req.body.productType !== 'undefined') {
+        product.productType = inferProductType(req.body.productType, req.body.category ?? product.category);
+      }
+
+      if (typeof req.body.variants !== 'undefined') {
+        const resolvedType = product.productType || inferProductType(null, product.category);
+        product.variants = buildVariantPayload(req.body.variants, resolvedType);
+      }
+
+      const updatedProduct = await product.save();
 
       res.json({
         success: 1,
