@@ -10,24 +10,9 @@ const app = express();
 const port = process.env.PORT || 4000;
 const appBaseUrl = (process.env.APP_URL && process.env.APP_URL.replace(/\/$/, '')) || `http://localhost:${port}`;
 
-// Middleware
 app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB database
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.error('Error connecting to MongoDB:', err.message);
-});
-
-// Serve images from the uploads folder
-app.use('/images', express.static(path.join(__dirname, 'upload/images')));
-
-// Define storage configuration for multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = 'upload/images';
@@ -41,17 +26,70 @@ const storage = multer.diskStorage({
   },
 });
 
-// Configure multer with the defined storage settings
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
-// Models
 const Product = require('./models/Product');
 const User = require('./models/User');
+const { inferProductType, buildVariantPayload } = require('./utils/variationHelper');
 
-// Routes
-const productRoutes = require('./routes/products')(upload, appBaseUrl); // Pass the upload middleware and base URL
+const hydrateLegacyProducts = async () => {
+  try {
+    const legacyProducts = await Product.find({
+      $or: [
+        { productType: { $exists: false } },
+        { productType: null },
+        { productType: '' },
+        { variants: { $exists: false } },
+        { 'variants.sizeType': { $exists: false } },
+      ],
+    });
+
+    if (!legacyProducts.length) {
+      return;
+    }
+
+    let updatedCount = 0;
+    for (const product of legacyProducts) {
+      const resolvedType = inferProductType(product.productType, product.category);
+      const variantsPayload = buildVariantPayload(product.variants || {}, resolvedType);
+
+      const needsVariantUpdate =
+        !product.variants ||
+        product.variants.sizeType !== variantsPayload.sizeType ||
+        (variantsPayload.sizes.length && (!product.variants.sizes || product.variants.sizes.length === 0)) ||
+        (variantsPayload.colors.length && (!product.variants.colors || product.variants.colors.length === 0));
+
+      if (product.productType !== resolvedType || needsVariantUpdate) {
+        product.productType = resolvedType;
+        product.variants = variantsPayload;
+        await product.save();
+        updatedCount += 1;
+      }
+    }
+
+    if (updatedCount) {
+      console.log(`Hydrated ${updatedCount} legacy product${updatedCount === 1 ? '' : 's'} with variation defaults.`);
+    }
+  } catch (error) {
+    console.error('Failed to hydrate legacy products:', error.message);
+  }
+};
+
+app.use('/images', express.static(path.join(__dirname, 'upload/images')));
+
+const productRoutes = require('./routes/products')(upload, appBaseUrl);
 const userRoutes = require('./routes/users');
 const cartRoutes = require('./routes/cart');
+
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(async () => {
+  console.log('Connected to MongoDB');
+  await hydrateLegacyProducts();
+}).catch((err) => {
+  console.error('Error connecting to MongoDB:', err.message);
+});
 
 app.get('/', (req, res) => {
   res.type('html').send(`
@@ -105,7 +143,6 @@ app.use('/', productRoutes);
 app.use('/', userRoutes);
 app.use('/', cartRoutes);
 
-// Global error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({
@@ -114,7 +151,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start the server
 app.listen(port, (err) => {
   if (err) {
     console.log('Error: ', err);
