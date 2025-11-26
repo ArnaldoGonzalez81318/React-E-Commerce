@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { HiOutlineHeart } from 'react-icons/hi2';
 import { ShopContext } from '../../Context/shopContext';
 import logo from '../Assets/logo.png';
 import cart_icon from '../Assets/cart_icon.png';
@@ -26,7 +27,7 @@ const getPathMenu = pathname => {
 };
 
 export const NavBar = () => {
-  const { cartItems } = useContext(ShopContext);
+  const { cartItems, wishlistCount } = useContext(ShopContext);
   const location = useLocation();
   const [activeMenu, setActiveMenu] = useState(getPathMenu(location.pathname));
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -106,6 +107,18 @@ export const NavBar = () => {
               Login
             </Link>
           )}
+          <Link
+            to="/wishlist"
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-rose-200 hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-100"
+            aria-label="View wishlist"
+          >
+            <HiOutlineHeart className="h-5 w-5" aria-hidden />
+            {wishlistCount > 0 && (
+              <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[0.65rem] font-semibold leading-none text-white">
+                {wishlistCount}
+              </span>
+            )}
+          </Link>
           <Link to="/cart" className="relative inline-flex items-center justify-center rounded-full border border-slate-200 p-2">
             <img src={cart_icon} alt="Cart" className="h-6 w-6" />
             {cartCount > 0 && (
@@ -141,13 +154,41 @@ export const NavBar = () => {
       {mobileOpen && (
         <div className="border-t border-slate-100 bg-white/95 backdrop-blur lg:hidden">
           <div className="container-grid flex flex-col gap-3 py-4">
+            <div className="flex items-center gap-3">
+              <Link
+                to="/wishlist"
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-base font-semibold text-slate-700"
+                onClick={() => setMobileOpen(false)}
+              >
+                <HiOutlineHeart className="h-5 w-5" aria-hidden />
+                Wishlist
+                {wishlistCount > 0 && (
+                  <span className="ml-auto inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-500 px-2 text-xs font-semibold text-white">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                to="/cart"
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-base font-semibold text-slate-700"
+                onClick={() => setMobileOpen(false)}
+              >
+                <img src={cart_icon} alt="Cart" className="h-5 w-5" />
+                Cart
+                {cartCount > 0 && (
+                  <span className="ml-auto inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-600 px-2 text-xs font-semibold text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </div>
             {navLinks.map(link => (
               <Link
                 key={link.to}
                 to={link.to}
                 className={`rounded-2xl px-4 py-3 text-base font-semibold ${activeMenu === link.label
-                    ? 'bg-slate-900 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 onClick={() => setActiveMenu(link.label)}
               >
