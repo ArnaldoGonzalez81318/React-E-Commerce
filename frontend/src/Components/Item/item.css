@@ -19,6 +19,43 @@
   background: radial-gradient(circle at top, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.02));
 }
 
+.item-wishlist {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.item-wishlist svg {
+  width: 20px;
+  height: 20px;
+  color: #0f172a;
+  transition: transform 150ms ease, color 150ms ease;
+}
+
+.item-wishlist:hover svg {
+  transform: scale(1.05);
+}
+
+.item-wishlist.is-active svg {
+  color: #e11d48;
+}
+
+.item-wishlist:focus-visible {
+  outline: 2px solid #4338ca;
+  outline-offset: 2px;
+}
+
 .item-media img {
   width: 100%;
   height: 280px;
