@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { HiHeart, HiOutlineHeart } from 'react-icons/hi2'
+import { ShopContext } from '../../Context/shopContext'
 
 import './item.css'
 
@@ -10,8 +12,18 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
 })
 
 const Item = ({ id, _id, productId, image, name, old_price, new_price, badge }) => {
-  const resolvedId = productId ?? id ?? _id
+  const resolvedId = _id ?? productId ?? id
   const href = resolvedId ? `/product/${resolvedId}` : undefined
+  const { isProductWishlisted, toggleWishlist } = useContext(ShopContext)
+
+  const wishlistActive = resolvedId ? isProductWishlisted(resolvedId) : false
+
+  const handleWishlistToggle = event => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (!resolvedId) return
+    toggleWishlist(resolvedId)
+  }
 
   const priceOld = typeof old_price === 'number' ? priceFormatter.format(old_price) : old_price
   const priceNew = typeof new_price === 'number' ? priceFormatter.format(new_price) : new_price
@@ -20,6 +32,19 @@ const Item = ({ id, _id, productId, image, name, old_price, new_price, badge }) 
     <div className="item-media" aria-hidden={!href}>
       <img src={image} alt={name} loading="lazy" />
       {badge && <span className="item-badge">{badge}</span>}
+      <button
+        type="button"
+        className={`item-wishlist ${wishlistActive ? 'is-active' : ''}`}
+        onClick={handleWishlistToggle}
+        aria-pressed={wishlistActive}
+        aria-label={wishlistActive ? 'Remove from wishlist' : 'Save to wishlist'}
+      >
+        {wishlistActive ? (
+          <HiHeart aria-hidden="true" />
+        ) : (
+          <HiOutlineHeart aria-hidden="true" />
+        )}
+      </button>
     </div>
   )
 
