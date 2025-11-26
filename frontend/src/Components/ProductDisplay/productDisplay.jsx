@@ -7,7 +7,6 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
-const defaultColors = ['#0f172a', '#f97316', '#6366f1', '#10b981'];
 const fallbackSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
 const footwearFallbackSizes = Array.from({ length: 30 }, (_, index) => {
   const value = 3.5 + index * 0.5;
@@ -31,7 +30,7 @@ const ProductDisplay = ({ product }) => {
   const colorOptions = useMemo(() => {
     if (product?.variants?.colors?.length) return product.variants.colors;
     if (product?.swatches?.length) return product.swatches;
-    return defaultColors;
+    return [];
   }, [product]);
 
   const sizeOptions = useMemo(() => {
@@ -44,7 +43,7 @@ const ProductDisplay = ({ product }) => {
 
   const [activeImage, setActiveImage] = useState(gallery[0]);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(colorOptions[0]);
+  const [selectedColor, setSelectedColor] = useState(colorOptions[0] || null);
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0]);
   const [wishlisted, setWishlisted] = useState(false);
   const [shareState, setShareState] = useState({ status: 'idle', message: '' });
@@ -54,7 +53,11 @@ const ProductDisplay = ({ product }) => {
   }, [gallery]);
 
   useEffect(() => {
-    setSelectedColor(colorOptions[0]);
+    if (!colorOptions.length) {
+      setSelectedColor(null);
+      return;
+    }
+    setSelectedColor(prev => (prev && colorOptions.includes(prev) ? prev : colorOptions[0]));
   }, [colorOptions]);
 
   useEffect(() => {
@@ -177,21 +180,23 @@ const ProductDisplay = ({ product }) => {
         </div>
 
         <div className='product-options'>
-          <div>
-            <p className='label'>Color</p>
-            <div className='swatches'>
-              {colorOptions.map(color => (
-                <button
-                  key={color}
-                  type='button'
-                  className={`swatch ${selectedColor === color ? 'active' : ''}`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setSelectedColor(color)}
-                  aria-label={`Select color ${color}`}
-                />
-              ))}
+          {colorOptions.length > 0 && (
+            <div>
+              <p className='label'>Color</p>
+              <div className='swatches'>
+                {colorOptions.map(color => (
+                  <button
+                    key={color}
+                    type='button'
+                    className={`swatch ${selectedColor === color ? 'active' : ''}`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setSelectedColor(color)}
+                    aria-label={`Select color ${color}`}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {sizeOptions.length > 0 && (
             <div>
