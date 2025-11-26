@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ShopContext } from '../../Context/shopContext';
 import './productDisplay.css';
 
@@ -20,7 +21,12 @@ const perks = [
 ];
 
 const ProductDisplay = ({ product }) => {
-  const { addToCart } = useContext(ShopContext);
+  const {
+    addToCart,
+    isProductWishlisted,
+    toggleWishlist,
+    shouldPromptWishlistSync,
+  } = useContext(ShopContext);
   const gallery = useMemo(() => {
     const sources = [...(product?.images || []), product?.image].filter(Boolean);
     const unique = Array.from(new Set(sources));
@@ -45,8 +51,10 @@ const ProductDisplay = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState(colorOptions[0] || null);
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0]);
-  const [wishlisted, setWishlisted] = useState(false);
   const [shareState, setShareState] = useState({ status: 'idle', message: '' });
+
+  const productKey = product?._id ?? product?.id;
+  const wishlistActive = productKey ? isProductWishlisted(productKey) : false;
 
   useEffect(() => {
     setActiveImage(gallery[0]);
@@ -76,6 +84,11 @@ const ProductDisplay = ({ product }) => {
   const handleAddToCart = () => {
     if (!product?.id) return;
     addToCart(product.id, quantity);
+  };
+
+  const handleWishlistToggle = () => {
+    if (!productKey) return;
+    toggleWishlist(productKey);
   };
 
   const handleShare = async () => {
@@ -168,14 +181,25 @@ const ProductDisplay = ({ product }) => {
         </div>
 
         <div className='product-utilities'>
-          <button type='button' className={`utility-chip ${wishlisted ? 'is-active' : ''}`} onClick={() => setWishlisted(prev => !prev)}>
-            {wishlisted ? 'Saved to wishlist' : 'Save to wishlist'}
+          <button
+            type='button'
+            className={`utility-chip ${wishlistActive ? 'is-active' : ''}`}
+            onClick={handleWishlistToggle}
+          >
+            {wishlistActive ? 'Saved to wishlist' : 'Save to wishlist'}
           </button>
           <button type='button' className='utility-chip' onClick={handleShare}>
             Share
           </button>
           {shareState.message && (
             <span className={`utility-feedback ${shareState.status}`}>{shareState.message}</span>
+          )}
+          {shouldPromptWishlistSync && (
+            <p className='wishlist-sync-tip'>
+              Sign in to sync your wishlist across devices.
+              {' '}
+              <Link to='/login'>Log in</Link>
+            </p>
           )}
         </div>
 
