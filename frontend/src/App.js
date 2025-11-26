@@ -6,6 +6,7 @@ import ShopCategory from './Pages/shopCategory';
 import Product from './Pages/product';
 import LoginSignup from './Pages/loginSignup';
 import Cart from './Pages/cart';
+import Wishlist from './Pages/wishlist';
 import Footer from './Components/Footer/footer';
 
 import mens_banner from './Components/Assets/banner_mens.png';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/product/:id" element={<Product />} />
             <Route path="/login" element={<LoginSignup />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<Wishlist />} />
           </Routes>
         </main>
         <Footer />
